@@ -1,0 +1,242 @@
+
+---
+title: "EPRTR Analysis"
+subtitle: ""
+format: 
+    html:
+        code-fold: true
+        code-summary: "Show the code"
+        code-link: true
+        css: styles.css
+        toc: true
+        number-sections: true
+        include-after-body: "footer.html"
+
+title-block-banner: "#f0f3f5"
+title-block-banner-color: "black"
+
+editor: visual
+jupyter: python3
+---
+
+
+# Excerpt {#section-1}
+
+
+Skip to the [data analysis](#section-4).
+
+***
+# Hypothesis {#section-2}
+
+***
+# Research questions {#section-3}
+
+
+***
+# Data Analysis {#section-4}
+
+:::{.callout-warning}
+The data analysis below is based on the European Pollutant Release and Transfer Register (E-PRTR) dataset^[It has been renamed and, as of 2028, reporting has been restructured under the European Industrial Emissions Portal (IEP); 
+Data source: Industrial Emissions Directive 2010/75/EU and European Pollutant Release and Transfer Register Regulation (EC) No 166/2006 - ver. 16.0 Feb. 2026 (Tabular data): https://sdi.eea.europa.eu/catalogue/srv/eng/catalog.search#/metadata/9405f714-8015-4b5b-a63c-280b82861b3d]. The E-PRTR is a Europe-wide register that provides information on the annual emissions of 91 listed pollutants from industrial facilities. The dataset includes details of facilities, such as their location, sector and name, as well as information on the quantities of pollutants released into the air and water that exceed a given threshold. However, the dataset itself is limited in its representation of actual releases and pollution across Europe due to emissions below the required threshold, pollutants not required to be reported, and facilities smaller than the required size for registration.
+:::
+
+:::{.callout-important}
+The analysis below classifies pollutants as hazardous or non-hazardous based on several official systems, including the European Registration, Evaluation, Authorisation and Restriction of Chemicals (REACH) system and its associated Classification, Labelling and Packaging of Chemicals (CLP) system, as well as substances of very high concern (SVHC). Furthermore, the International Agency for Research on Cancer (IARC) publishes and maintains an official list of substances classified as carcinogenic or potential carcinogens. Finally, pollutants in the E-PRTR have been compared to lists of substances monitored in the environment.
+:::
+
+:::{.callout-caution}
+No USEtox toxicity weights or characterisation factors have yet been applied to the data.
+:::
+
+:::{.callout-note}
+E-PRTR releases have been classified as carcinogenic, hazardous or non-hazardous by matching registered pollutants to their CAS and EC numbers, and then cross-matching those numbers to substances listed under REACH or IARC as hazardous, substances of very high concern (SVHC), or carcinogenic substances.
+:::
+
+## Which facilities emit the largest amount of releases and which the most hazardous mass? 
+
+### Data table
+
+```{python}
+#| echo: false
+
+import pandas as pd
+from itables import init_notebook_mode, show
+
+init_notebook_mode(all_interactive=False)
+
+df = pd.DataFrame({
+    "Facility": ["Facility A", "Facility B", "Facility C"],
+    "Releases":[85, 120, 210]
+})
+
+show(df)
+```
+
+### Data visualisation
+```{python}
+
+#| echo: false
+
+import pandas as pd
+import plotly.express as px
+
+# Illustrative data
+data = pd.DataFrame({
+    "date": pd.date_range("2026-01-01", periods=6, freq="MS"),
+    "value":[90, 95, 110, 125, 130, 150]
+})
+
+data = data.sort_values("date")
+
+fig = px.area(
+    data,
+    x="date",
+    y="value",
+    labels={
+        "date": "Date",
+        "value": "Bitcoin price ($)"
+    },
+    template="simple_white"
+)
+
+fig.update_traces(
+    line_color="#69b3a2",
+    fillcolor="rgba(105, 179, 162, 0.5)"
+)
+
+fig.update_layout(
+    hovermode="x unified",
+    height=450
+)
+
+fig.show()
+```
+
+
+### interactive map + linked side chart
+
+```{python}
+#| echo: false
+
+import pandas as pd
+import altair as alt
+from vega_datasets import data
+
+# Fictional facility locations
+facilities = pd.DataFrame({
+    "facility": ["Facility A", "Facility B", "Facility C"],
+    "longitude": [8.7, 12.0, 4.5],
+    "latitude": [50.1, 51.3, 51.9]
+})
+
+# Fictional annual releases
+releases = pd.DataFrame({
+    "facility": ["Facility A"] * 4
+              + ["Facility B"] * 4
+              + ["Facility C"] * 4,
+    "year": [2020, 2021, 2022, 2023] * 3,
+    "releases": [85, 110, 95, 70,
+                 120, 105, 140, 115,
+                 210, 180, 160, 150]
+})
+
+# Separate hover inputs for the two views
+map_hover = alt.selection_point(
+    name="map_hover",
+    fields=["facility"],
+    on="pointerover",
+    clear="pointerout",
+    toggle=False,
+    empty=True
+)
+
+chart_hover = alt.selection_point(
+    name="chart_hover",
+    fields=["facility"],
+    on="pointerover",
+    clear="pointerout",
+    toggle=False,
+    empty=True
+)
+
+# With no active hover, all facilities remain visible.
+highlight = map_hover & chart_hover
+
+colors = alt.Color("facility:N", title="Facility")
+
+# Map background
+countries = alt.topo_feature(data.world_110m.url, "countries")
+
+background = alt.Chart(countries).mark_geoshape(
+    fill="#eeeeee",
+    stroke="white"
+)
+
+# Facility markers
+markers = alt.Chart(facilities).mark_circle().encode(
+    longitude="longitude:Q",
+    latitude="latitude:Q",
+    color=colors,
+    opacity=alt.condition(highlight, alt.value(1), alt.value(0.15)),
+    size=alt.condition(highlight, alt.value(180), alt.value(70)),
+    tooltip=["facility:N", "longitude:Q", "latitude:Q"]
+).add_params(map_hover)
+
+map_chart = (background + markers).project(
+    type="mercator",
+    center=[9, 51],
+    scale=1100
+).properties(
+    width=350,
+    height=300,
+    title="Facility locations"
+)
+
+# Time-series lines
+base = alt.Chart(releases).encode(
+    x=alt.X("year:O", title="Year"),
+    y=alt.Y("releases:Q", title="Releases (kg/year)"),
+    color=colors
+)
+
+lines = base.mark_line().encode(
+    opacity=alt.condition(highlight, alt.value(1), alt.value(0.15)),
+    strokeWidth=alt.condition(highlight, alt.value(3), alt.value(1))
+)
+
+# Hovering these points selects a facility in both views
+points = base.mark_circle(size=65).encode(
+    opacity=alt.condition(highlight, alt.value(1), alt.value(0.15)),
+    tooltip=["facility:N", "year:O", "releases:Q"]
+).add_params(chart_hover)
+
+time_chart = (lines + points).properties(
+    width=420,
+    height=300,
+    title="Annual releases"
+)
+
+linked_chart = alt.hconcat(
+    map_chart,
+    time_chart,
+    spacing=25
+).resolve_scale(color="shared")
+
+linked_chart
+```
+***
+
+
+***
+
+::: {.callout-note collapse="true" title="Session Information"}
+
+```{python}
+#| echo: false
+
+import session_info
+
+session_info.show(html=False, dependencies=True)
+```
+
+:::

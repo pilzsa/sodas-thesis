@@ -1,0 +1,114 @@
+{
+  "cells": [
+    {
+      "cell_type": "raw",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"EPRTR Analysis\"\n",
+        "---"
+      ],
+      "id": "b1b105d3"
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"\"\n",
+        "format: html\n",
+        "css: style.css\n",
+        "editor: visual\n",
+        "toc: true\n",
+        "number-sections: true\n",
+        "jupyter: python3\n",
+        "include-after-body: \"footer.html\"\n",
+        "format:\n",
+        "    code-fold: true\n",
+        "    code-summary: \"Show the code\"\n",
+        "---\n",
+        "\n",
+        "\n",
+        "# Excerpt {#section-1}\n",
+        "\n",
+        "\n",
+        "Skip to the [data analysis](#section-4).\n",
+        "\n",
+        "***\n",
+        "# Hypothesis {#section-2}\n",
+        "\n",
+        "***\n",
+        "# Research questions {#section-3}\n",
+        "\n",
+        "\n",
+        "***\n",
+        "# Data Analysis {#section-4}\n",
+        "\n",
+        "\n",
+        "## Which facilities emit the largest amount of releases and which the most hazardous mass? \n"
+      ],
+      "id": "cc91041d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: false\n",
+        "\n",
+        "import pandas as pd\n",
+        "from itables import init_notebook_mode, show\n",
+        "\n",
+        "init_notebook_mode(all_interactive=False)\n",
+        "\n",
+        "df = pd.DataFrame({\n",
+        "    \"Facility\": [\"Facility A\", \"Facility B\", \"Facility C\"],\n",
+        "    \"Releases\":[85, 120, 210]\n",
+        "})\n",
+        "\n",
+        "show(df)"
+      ],
+      "id": "c8b98368",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "***\n",
+        "\n",
+        "&nbsp;\n",
+        "<hr />\n",
+        "<p style=\"text-align: center;\">A work by <a href=\"https://github.com/pilzsa\">Sarah Pilz</a></p>\n",
+        "<p style=\"text-align: center;\"><span style=\"color: #808080;\"><em>sarah.pilz@pm.me</em></span></p>\n",
+        "\n",
+        "<!-- Add icon library -->\n",
+        "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css\">\n",
+        "\n",
+        "<!-- Add font awesome icons -->\n",
+        "<p style=\"text-align: center;\">\n",
+        "    <a href=\"https://www.linkedin.com/in/sarahpilz/\" class=\"fa fa-linkedin\"></a>\n",
+        "    <a href=\"https://github.com/pilzsa/\" class=\"fa fa-github\"></a>\n",
+        "</p>\n",
+        "\n",
+        "&nbsp;\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "*This is a Quarto website. To learn more about Quarto websites visit <https://quarto.org/docs/websites>.*\n"
+      ],
+      "id": "50db4997"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/usr/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

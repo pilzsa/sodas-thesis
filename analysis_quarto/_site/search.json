@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "EPRTR Analysis",
+    "section": "",
+    "text": "Skip to the data analysis."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  },
+  {
+    "objectID": "index.html#which-facilities-emit-the-largest-amount-of-releases-and-which-the-most-hazardous-mass",
+    "href": "index.html#which-facilities-emit-the-largest-amount-of-releases-and-which-the-most-hazardous-mass",
+    "title": "EPRTR Analysis",
+    "section": "4.1 Which facilities emit the largest amount of releases and which the most hazardous mass?",
+    "text": "4.1 Which facilities emit the largest amount of releases and which the most hazardous mass?\n\n4.1.1 Data table\n\n\n\n\n\n\n\n\n\n\n    \n        \n        \n        \n        \n        \n        \n        \n        \n    \n    \n   \n    \n      \n  \n        \n    \n    \n  \n        \n    \n    \n  \n        \n    \n      \n  \n        \n            \n                \n                \n            \n\n            \n                \n                \n            \n\n            \n                \n                \n            \n\n            \n                \n                \n            \n\n            \n                \n                \n            \n        \n    \n\n\nThis is the init_notebook_mode cell from ITables v2.9.1\n(you should not see this message - is your notebook trusted?)\n\n\n\n\n\n\n  \n    \n      \n    \n        \n        \n        \n        \n        \n        \n        \n        \n    \n    \n   \n    \n      \n  \n        \n    \n    \n  \n        \n    \n    \n  \n        \n    \n      \n  \n        \n            \n                \n                \n            \n\n            \n                \n                \n            \n\n            \n                \n                \n            \n\n            \n                \n                \n            \n\n            \n                \n                \n            \n        \n    \n\n\n        Loading ITables v2.9.1 from the init_notebook_mode cell...\n        (need help?)\n      \n    \n  \n\n    \n      🔒ⓘFacility\n      Releases\n    \nFacility A85\nFacility B120\nFacility C210\n\n\n\n\n\n\n4.1.2 Data visualisation\n\n\n                            \n                                            \n\n\n\n\n4.1.3 interactive map + linked side chart\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNoteSession Information\n\n\n\n\n\n\n\n-----\naltair              6.3.0\nitables             2.9.1\npandas              3.0.6\nplotly              7.1.0\nsession_info        v1.0.1\nvega_datasets       0.9.0\n-----\nanyio                       NA\narrow                       1.4.0\nattr                        26.1.0\nattrs                       26.1.0\nbabel                       2.18.0\ncertifi                     2026.10.19\ncharset_normalizer          3.5.2\ncomm                        0.2.3\ncython_runtime              NA\ndateutil                    2.9.0.post0\ndebugpy                     1.8.22\nfastjsonschema              NA\nfqdn                        NA\nidna                        3.20\nipykernel                   7.4.0\nisoduration                 NA\njinja2                      3.1.6\njson5                       0.17.3\njsonpointer                 3.4\njsonschema                  4.26.0\njsonschema_specifications   NA\njupyter_events              0.12.1\njupyter_server              2.21.1\njupyterlab_server           2.28.1\nlark                        1.3.1\nmarkupsafe                  3.0.4\nnarwhals                    2.27.1\nnbformat                    5.11.1\nnumpy                       2.5.4\npackaging                   26.3\nplatformdirs                4.13.5\nprometheus_client           NA\npsutil                      7.2.2\npydev_ipython               NA\npydevconsole                NA\npydevd                      3.5.0\npydevd_file_utils           NA\npydevd_plugins              NA\npydevd_tracing              NA\npygments                    2.21.0\npythonjsonlogger            NA\nreferencing                 NA\nrequests                    2.34.2\nrfc3339_validator           0.1.4\nrfc3986_validator           0.1.1\nrfc3987_syntax              NA\nrpds                        NA\nsend2trash                  NA\nsitecustomize               NA\nsix                         1.17.0\ntornado                     6.5.10\ntraitlets                   5.16.1\ntyping_extensions           NA\nuri_template                NA\nurllib3                     2.8.0\nwebcolors                   NA\nwebsocket                   1.9.2\nyaml                        6.0.3\nzmq                         27.2.0\n-----\nIPython             9.17.1\njupyter_client      8.10.0\njupyter_core        5.9.1\njupyterlab          4.6.4\nnotebook            7.6.3\n-----\nPython 3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]\nLinux-6.8.0-147-generic-x86_64-with-glibc2.39\n-----\nSession information updated at 2026-10-21 17:05"
+  },
+  {
+    "objectID": "index.html#footnotes",
+    "href": "index.html#footnotes",
+    "title": "EPRTR Analysis",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nIt has been renamed and, as of 2028, reporting has been restructured under the European Industrial Emissions Portal (IEP); Data source: Industrial Emissions Directive 2010/75/EU and European Pollutant Release and Transfer Register Regulation (EC) No 166/2006 - ver. 16.0 Feb. 2026 (Tabular data): https://sdi.eea.europa.eu/catalogue/srv/eng/catalog.search#/metadata/9405f714-8015-4b5b-a63c-280b82861b3d↩︎"
+  }
+]
