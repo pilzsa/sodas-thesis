@@ -1,7 +1,7 @@
 
 ---
 title: "EPRTR Analysis"
-subtitle: ""
+subtitle: "SODAS Thesis"
 format: 
     html:
         code-fold: true
@@ -10,6 +10,8 @@ format:
         css: styles.css
         toc: true
         number-sections: true
+        include-before-body::
+            - file: github-corner.html
         include-after-body: "footer.html"
 
 title-block-banner: "#f0f3f5"
