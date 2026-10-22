@@ -1,6 +1,6 @@
 
 ---
-title: "EPRTR Analysis"
+title: "E-PRTR Analysis"
 subtitle: "SODAS Thesis"
 format: 
     html:
@@ -10,17 +10,22 @@ format:
         css: styles.css
         toc: true
         number-sections: true
-        include-before-body::
+        embed-resources: true
+
+        include-in-header:
+            - file: particles-header.html
+
+        include-before-body:
             - file: github-corner.html
+
         include-after-body: "footer.html"
 
-title-block-banner: "#f0f3f5"
-title-block-banner-color: "black"
+title-block-banner: "#2c3641"
+title-block-banner-color: "#eef0f3"
 
 editor: visual
 jupyter: python3
 ---
-
 
 # Excerpt {#section-1}
 

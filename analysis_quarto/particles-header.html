@@ -1,0 +1,29 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const banner = document.querySelector(
+    "#title-block-header .quarto-title-banner"
+  );
+
+  if (!banner || typeof particlesJS === "undefined") {
+    return;
+  }
+
+  // Respect visitors who prefer reduced motion.
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return;
+  }
+
+  const container = document.createElement("div");
+  container.id = "particles-js";
+  container.setAttribute("aria-hidden", "true");
+
+  banner.prepend(container);
+
+  particlesJS.load(
+    "particles-js",
+    "./particlesjs-config.json"
+  );
+});
+</script>

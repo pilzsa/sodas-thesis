@@ -1,5 +1,7 @@
 project:
   type: website
+  resources:
+    - particlesjs-config.json
 
 website:
   title: "analysis_quarto"

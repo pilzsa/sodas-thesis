@@ -5,3 +5,50 @@ h1, .h1, h2, .h2, h3, .h3 {
 figcaption {
     text-align: center;
 }
+
+/* Leave room for the 80px GitHub corner */
+#quarto-header .navbar #quarto-search {
+  margin-right: 100px !important;
+}
+
+/* Establish the banner as the positioning container. */
+#title-block-header .quarto-title-banner {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-top: 9rem;
+  padding-bottom: 9rem;
+}
+
+/* Particle background. */
+#title-block-header .quarto-title-banner #particles-js {
+  position: absolute;
+
+/* Remove any grid-column or grid-row placement */
+  grid-area: auto !important;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+  max-width: none !important;
+
+  margin: 0;
+  padding: 0;
+
+
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Keep the title and subtitle above the particles. */
+#title-block-header .quarto-title-banner > :not(#particles-js) {
+  position: relative;
+  z-index: 1;
+}
+
+#particles-js canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}

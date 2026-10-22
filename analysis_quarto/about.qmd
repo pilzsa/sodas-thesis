@@ -1,5 +1,31 @@
 ---
-title: "About"
+title: "About the methodology"
+format: 
+    html:
+        code-fold: true
+        code-summary: "Show the code"
+        code-link: true
+        css: styles.css
+        toc: true
+        number-sections: true
+        embed-resources: true
+
+        include-in-header:
+            - file: particles-header.html
+
+        include-before-body:
+            - file: github-corner.html
+
+        include-after-body: "footer.html"
+
+title-block-banner: "#2c3641"
+title-block-banner-color: "#eef0f3"
+
+editor: visual
+jupyter: python3
 ---
 
-About this site
+## E-PRTR data cleaning and analysis
+### 
+
+## E-PRTR 
