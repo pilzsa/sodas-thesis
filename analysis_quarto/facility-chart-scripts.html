@@ -1,0 +1,19 @@
+<!-- Vendored UMD builds: the chart stays readable offline and inside the
+     self-contained page that embed-resources produces.
+
+     Quarto ships an AMD loader on some pages, and the UMD wrappers prefer
+     define() over a global. Hide define while the four libraries load so they
+     register React, ReactDOM, htm and d3 as globals, then put it back. -->
+<script>
+  window.__quartoAmdDefine = window.define;
+  window.define = undefined;
+</script>
+<script src="assets/vendor/react.production.min.js"></script>
+<script src="assets/vendor/react-dom.production.min.js"></script>
+<script src="assets/vendor/htm.umd.js"></script>
+<script src="assets/vendor/d3.min.js"></script>
+<script>
+  window.define = window.__quartoAmdDefine;
+</script>
+<script src="assets/facility-releases.js"></script>
+<script src="assets/facility-map.js"></script>

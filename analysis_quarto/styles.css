@@ -52,3 +52,1028 @@ figcaption {
   width: 100% !important;
   height: 100% !important;
 }
+
+/* ---------------------------------------------------------------------------
+   Facility release chart (React + D3, assets/facility-releases.js)
+   One ranking at a time; the segmented control switches the view. Colours
+   follow the EPRTR Atlas design tokens (ink, hairlines, teal brand).
+   --------------------------------------------------------------------------- */
+
+.fr-figure {
+  margin: 0.75rem 0 1.25rem;
+  font-family: "Source Sans Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #17212c;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* The chart needs more room than the 799px body column for these facility
+   names, but it must stop where the table of contents starts: page-start to
+   body-end gives the body column plus the left margin. Quarto's own
+   .column-page spans the full page and would run under the TOC, so narrow that
+   placement for this figure only. */
+#quarto-document-content .column-page.facility-page {
+  grid-column: page-start / body-end;
+}
+
+/*
+ * Head: the heading on the left, the switches in the top-right corner. The grid
+ * (not a wrapping flex row) is what keeps the view buttons where they are: the
+ * three views print different headings and subheadings, and a longer one grows
+ * the head downward instead of pushing the switch down and to a new line. The
+ * subheading reserves two lines for the same reason - the shortest view copy
+ * still leaves the head as tall as the tallest one where it can.
+ */
+.fr-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.55rem 1.5rem;
+  margin-bottom: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .fr-head { grid-template-columns: minmax(0, 1fr); }
+  .fr-head > .fr-controls { justify-self: start; }
+}
+
+.fr-head__title {
+  margin: 0 0 0.15rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.fr-head__sub {
+  margin: 0;
+  max-width: 46em;
+  min-height: 2.7em;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: #536273;
+}
+
+/* Segmented control, as on the map dashboard. */
+.fr-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  background: #edf2f7;
+  border: 1px solid #d7dfe8;
+  border-radius: 999px;
+}
+
+.fr-switch__btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #536273;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, box-shadow 120ms ease;
+}
+
+.fr-switch__btn:hover { color: #0d5b83; }
+
+.fr-switch__btn.is-active {
+  background: #ffffff;
+  color: #0d5b83;
+  box-shadow: 0 1px 2px rgba(17, 30, 44, 0.12);
+}
+
+.fr-switch__btn:focus-visible {
+  outline: 2px solid #0d5b83;
+  outline-offset: 1px;
+}
+
+/* Two segmented controls sit on one chart: the grouping (what the rows are)
+   above the ranking, so they stack in the head and keep its right edge. */
+.fr-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+/* The grouping switch carries a quiet caption, as the map's medium switch
+   does, because "E-PRTR sector / IED activity" needs to be announced. */
+.fr-switch--group { flex: 0 0 auto; }
+
+.fr-switch__lead {
+  align-self: center;
+  padding: 0 0.35rem 0 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #7b8796;
+  white-space: nowrap;
+}
+
+.fr-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.15rem;
+  margin: 0 0 0.85rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+  color: #536273;
+}
+
+.fr-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: opacity 120ms ease;
+}
+
+/* A swatch is 0.65rem of fill on a white page, and the palest series colours
+   (Golden Pollen at 1.4:1, Emerald at 1.9:1) sit close to it: the inset ring is
+   what makes the chip a chip. */
+.fr-legend__swatch {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 2px;
+  flex: 0 0 auto;
+  box-shadow: inset 0 0 0 1px rgba(23, 33, 44, 0.32);
+}
+
+.fr-plot { position: relative; }
+.fr-plot svg { display: block; max-width: 100%; }
+.fr-plot text { font-family: inherit; }
+
+/* A short fade on every view switch: the rows arrive rather than jump.
+   The fade starts partly visible and ends at the natural opacity, so a paused
+   compositor or a printed page still shows the bars. */
+@keyframes fr-swap {
+  from { opacity: 0.25; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.fr-swap { animation: fr-swap 240ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-swap { animation: none; }
+}
+
+.fr-foot {
+  margin: 0.6rem 0 0;
+  max-width: 62em;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #536273;
+}
+
+/* ------------------------------------------------------------------ tooltip */
+
+.fr-tip {
+  position: absolute;
+  z-index: 5;
+  width: 320px;
+  padding: 0.6rem 0.7rem;
+  background: #ffffff;
+  border: 1px solid #d7dfe8;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(17, 30, 44, 0.16);
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: #17212c;
+  pointer-events: none;
+}
+
+.fr-tip__name { font-weight: 700; }
+.fr-tip__place { margin-bottom: 0.35rem; color: #536273; }
+
+.fr-tip__total {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #e9eef4;
+}
+
+.fr-tip__total strong { font-size: 0.9rem; }
+.fr-tip__total span { color: #536273; }
+
+.fr-tip__row {
+  display: grid;
+  grid-template-columns: 0.6rem 1fr auto auto;
+  gap: 0.45rem;
+  align-items: center;
+  padding: 0.08rem 0.15rem;
+}
+
+.fr-tip__row.is-focus {
+  background: #f5f8fb;
+  border-radius: 3px;
+}
+
+.fr-tip__swatch {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(23, 33, 44, 0.32);
+}
+.fr-tip__value { font-variant-numeric: tabular-nums; }
+
+.fr-tip__share {
+  min-width: 2.6rem;
+  text-align: right;
+  color: #536273;
+  font-variant-numeric: tabular-nums;
+}
+
+.fr-tip__class {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid #e9eef4;
+}
+
+.fr-tip__class-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+}
+
+.fr-tip__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.3rem;
+}
+
+.fr-tag {
+  padding: 0.02rem 0.36rem;
+  border-radius: 999px;
+  background: #eef2f6;
+  color: #536273;
+  font-size: 0.62rem;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.fr-tag--iarc { background: #f3e8ef; color: #6f1d56; }
+.fr-tag--clp { background: #fbe9ea; color: #a62b3c; }
+.fr-tag--wfd { background: #e4eef3; color: #0d5b83; }
+.fr-tag--svhc { background: #efe9f6; color: #5b3a7e; }
+.fr-tag--hap { background: #fdf0e4; color: #a35a12; }
+.fr-tag--pool { background: #eef2f6; color: #536273; }
+.fr-tag--none { background: #eef2f6; color: #7b8796; }
+
+.fr-tip__note { margin: 0.15rem 0 0; color: #536273; }
+.fr-tip__note--quiet { font-style: italic; color: #7b8796; }
+
+.fr-tip__hint {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid #e9eef4;
+  color: #7b8796;
+  font-style: italic;
+}
+
+.fr-tip__co2 {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid #e9eef4;
+  color: #536273;
+}
+
+.fr-tip__aside {
+  display: block;
+  font-style: italic;
+  color: #7b8796;
+}
+
+@media print {
+  .fr-figure { break-inside: avoid; }
+  .fr-switch { display: none; }
+  .fr-tip { display: none; }
+  .fr-swap { animation: none; opacity: 1; transform: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Facility map (React + SVG, assets/facility-map.js)
+   The same design tokens as the ranking beside it: ink, hairlines, teal brand.
+   --------------------------------------------------------------------------- */
+
+.fm-figure {
+  margin: 0.75rem 0 1.25rem;
+  font-family: "Source Sans Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #17212c;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/*
+ * Head: the heading on the left, the view switch on the right. The grid (not a
+ * wrapping flex row) anchors the switch to the top-right corner, so the three
+ * view buttons keep one position whichever heading is selected - a three-line
+ * subheading no longer pushes them down. The subheading reserves two lines for
+ * the same reason.
+ */
+.fm-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.55rem 1.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.fm-head__title {
+  margin: 0 0 0.15rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.fm-head__sub {
+  margin: 0;
+  max-width: 46em;
+  min-height: 2.7em;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: #536273;
+}
+
+/* Below 900 px the switch drops under the text instead of squeezing it: a
+   330 px pill next to a 230 px column would leave four-word lines. */
+@media (max-width: 900px) {
+  .fm-head { grid-template-columns: minmax(0, 1fr); }
+  .fm-head > .fm-switch { justify-self: start; }
+}
+
+.fm-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  background: #edf2f7;
+  border: 1px solid #d7dfe8;
+  border-radius: 999px;
+}
+
+.fm-switch__btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #536273;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, box-shadow 120ms ease;
+}
+
+.fm-switch__btn:hover { color: #0d5b83; }
+
+.fm-switch__btn.is-active {
+  background: #ffffff;
+  color: #0d5b83;
+  box-shadow: 0 1px 2px rgba(17, 30, 44, 0.12);
+}
+
+.fm-switch__btn:focus-visible {
+  outline: 2px solid #0d5b83;
+  outline-offset: 1px;
+}
+
+/* The medium switch lives in the toolbar: same pill, with a quiet caption. */
+.fm-switch--medium { flex: 0 0 auto; }
+
+.fm-switch__lead {
+  align-self: center;
+  padding: 0 0.4rem 0 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #7b8796;
+  white-space: nowrap;
+}
+
+/* Toolbar: the search box on the left, the gesture hint on the right. */
+.fm-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.25rem;
+  margin-bottom: 0.55rem;
+}
+
+/* -------------------------------------------------------------------- search */
+
+.fm-search {
+  position: relative;
+  flex: 0 1 22rem;
+  min-width: 12rem;
+}
+
+.fm-search__icon {
+  position: absolute;
+  top: 50%;
+  left: 0.5rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-top: -0.425rem;
+  color: #7b8796;
+  pointer-events: none;
+}
+
+.fm-search__input {
+  width: 100%;
+  padding: 0.3rem 1.6rem 0.3rem 1.75rem;
+  border: 1px solid #d7dfe8;
+  border-radius: 6px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #17212c;
+}
+
+.fm-search__input::placeholder { color: #8b97a5; }
+
+.fm-search__input:focus {
+  outline: 2px solid #0d5b83;
+  outline-offset: 1px;
+  border-color: #0d5b83;
+}
+
+.fm-search__clear {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  margin-top: -0.6rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: #7b8796;
+  cursor: pointer;
+}
+
+.fm-search__clear:hover { color: #17212c; }
+
+.fm-search__list {
+  position: absolute;
+  z-index: 7;
+  top: calc(100% + 3px);
+  left: 0;
+  right: 0;
+  max-height: 16rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.2rem;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid #d7dfe8;
+  border-radius: 6px;
+  box-shadow: 0 12px 28px rgba(17, 30, 44, 0.16);
+}
+
+.fm-search__item {
+  display: grid;
+  grid-template-columns: 4.4rem minmax(0, 1fr);
+  gap: 0 0.45rem;
+  padding: 0.28rem 0.35rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.fm-search__item.is-active { background: #eaf2f7; }
+
+.fm-search__kind {
+  grid-row: span 2;
+  align-self: center;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8b97a5;
+}
+
+.fm-search__label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #17212c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-search__label mark {
+  background: #d5e9f5;
+  color: inherit;
+  border-radius: 2px;
+}
+
+.fm-search__detail {
+  font-size: 0.68rem;
+  color: #7b8796;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-search__empty {
+  position: absolute;
+  z-index: 7;
+  top: calc(100% + 3px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0.45rem 0.55rem;
+  background: #ffffff;
+  border: 1px solid #d7dfe8;
+  border-radius: 6px;
+  box-shadow: 0 12px 28px rgba(17, 30, 44, 0.16);
+  font-size: 0.72rem;
+  color: #7b8796;
+}
+
+/* ---------------------------------------------------------------------- map */
+
+/* The map takes the full width of the figure; the legend floats over its
+   north-east corner, where the window has the fewest facilities. */
+.fm-body {
+  position: relative;
+  min-width: 0;
+}
+
+.fm-plot {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #b3c4d3;
+  border-radius: 6px;
+  /* Same value as the sea rect the plot draws, so the frame does not flash a
+     different blue while the payload loads. */
+  background: #dfe8f0;
+  /* The pointer gestures are the map's: no browser panning or text selection. */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.fm-plot:focus-visible {
+  outline: 2px solid #0d5b83;
+  outline-offset: 2px;
+}
+
+.fm-plot.is-zoomed { cursor: grab; }
+.fm-plot.is-zoomed:active { cursor: grabbing; }
+/* Once the map has the wheel (a press or a tab into it), the grab cursor says
+   so; until then the page owns the scroll and the plot keeps the default. */
+.fm-plot.is-engaged { cursor: grab; }
+.fm-plot.is-engaged:active { cursor: grabbing; }
+
+.fm-plot svg { display: block; }
+.fm-plot text { font-family: inherit; }
+.fm-plot path { shape-rendering: geometricPrecision; }
+
+/* The base map is a light plate on a slightly deeper sea: the dots carry the
+   colour, so the surface stays quiet, but land and water have to part from each
+   other and the coastline is drawn darker than either (see COUNTRY_STROKE). */
+.fm-sea { fill: #dfe8f0; }
+.fm-base path { stroke-linejoin: round; }
+
+.fm-scale-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  fill: #46586b;
+  paint-order: stroke;
+  stroke: #dfe8f0;
+  stroke-width: 2px;
+}
+
+/* -------------------------------------------------------------------- zoom */
+
+.fm-zoom {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fm-zoom__btn {
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  padding: 0;
+  border: 1px solid #c8d6e2;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 2px rgba(17, 30, 44, 0.12);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: #17212c;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.fm-zoom__btn:hover:not(:disabled) {
+  color: #0d5b83;
+  border-color: #8fb6cd;
+}
+
+.fm-zoom__btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.fm-zoom__btn:focus-visible {
+  outline: 2px solid #0d5b83;
+  outline-offset: 1px;
+}
+
+/* -------------------------------------------------------------------- legend */
+
+/* The legend sits over the map rather than in a column beside it, so the map
+   keeps the full page width. Quarto's own aside rule is overridden because it
+   would otherwise pin this box to the page margin. */
+#quarto-document-content .fm-body > aside.fm-legend {
+  position: absolute;
+  z-index: 3;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 14.5rem;
+  max-height: calc(100% - 1.2rem);
+  overflow-y: auto;
+  padding: 0.55rem 0.65rem 0.6rem;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #c8d6e2;
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(17, 30, 44, 0.1);
+  grid-column: auto !important;
+  grid-row: auto !important;
+}
+
+.fm-legend {
+  font-size: 0.73rem;
+  line-height: 1.35;
+  color: #536273;
+}
+
+@media (max-width: 900px) {
+  #quarto-document-content .fm-body > aside.fm-legend {
+    position: static;
+    width: auto;
+    max-width: 34rem;
+    max-height: none;
+    margin-bottom: 0.6rem;
+    box-shadow: none;
+  }
+}
+
+.fm-legend__block + .fm-legend__block {
+  margin-top: 0.9rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #e9eef4;
+}
+
+.fm-legend__head {
+  margin: 0 0 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #17212c;
+}
+
+.fm-legend__quiet {
+  font-weight: 400;
+  color: #7b8796;
+}
+
+.fm-legend__list,
+.fm-legend__sizes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fm-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.08rem 0;
+}
+
+/* The map swatches take their outline from the level itself (inline, from the
+   payload); this is the fallback for a level without one. */
+.fm-legend__swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 2px;
+  flex: 0 0 auto;
+  box-shadow: inset 0 0 0 1px rgba(23, 33, 44, 0.28);
+}
+
+.fm-legend__text { flex: 1 1 auto; }
+
+.fm-legend__count {
+  color: #7b8796;
+  font-variant-numeric: tabular-nums;
+}
+
+.fm-legend__sizes {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.fm-legend__size {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.fm-legend__size svg { display: block; }
+
+.fm-legend__note {
+  margin: 0.45rem 0 0;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: #7b8796;
+}
+
+.fm-foot {
+  margin: 0.6rem 0 0;
+  max-width: 62em;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #536273;
+}
+
+.fm-status {
+  padding: 1.5rem 0;
+  font-size: 0.8rem;
+  color: #536273;
+}
+
+/* ------------------------------------------------------------------ tooltip */
+
+.fm-tip-box {
+  position: absolute;
+  z-index: 5;
+  padding: 0.6rem 0.7rem;
+  background: #ffffff;
+  border: 1px solid #d7dfe8;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(17, 30, 44, 0.16);
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: #17212c;
+  pointer-events: none;
+}
+
+/* Only the pinned card takes the pointer: it carries the permit link, so its
+   text has to be selectable and the link clickable. The hover card stays out
+   of the way, or it would steal the pointer from the dot that opened it. */
+.fm-tip-box.is-pinned { pointer-events: auto; }
+
+.fm-tip-box.is-pinned .fm-tip__name { padding-right: 1.3rem; }
+
+.fm-tip__close {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  color: #7b8796;
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fm-tip__close:hover { background: #eef1f4; color: #17212c; }
+.fm-tip__close:focus-visible { outline: 2px solid #2f6f9f; outline-offset: 1px; }
+
+.fm-tip__name { font-weight: 700; }
+.fm-tip__place { margin-bottom: 0.35rem; color: #536273; }
+
+.fm-tip__total {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #e9eef4;
+}
+
+.fm-tip__total strong { font-size: 0.9rem; }
+.fm-tip__total span { color: #536273; }
+
+/* Air / water split of the total the card is about: the medium the map is
+   measuring is marked, so the number and the dot tell the same story. */
+.fm-tip__split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0 0 0.4rem;
+}
+
+.fm-tip__part {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid #e3eaf1;
+  border-radius: 4px;
+  background: #f6f9fb;
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  color: #46586b;
+}
+
+.fm-tip__part.is-active {
+  border-color: #b7cfe0;
+  background: #e6f0f7;
+  color: #17212c;
+  font-weight: 600;
+}
+
+.fm-tip__part-name { color: #7b8796; font-weight: 600; }
+.fm-tip__part.is-active .fm-tip__part-name { color: #0d5b83; }
+
+.fm-tip__level {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.fm-tip__swatch {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 2px;
+  flex: 0 0 auto;
+  box-shadow: inset 0 0 0 1px rgba(23, 33, 44, 0.32);
+}
+
+.fm-tip__quiet { color: #7b8796; }
+
+/* Substances behind the total: name, mass, then the hazard chips. */
+.fm-tip__subs {
+  margin: 0 0 0.4rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #e9eef4;
+}
+
+.fm-tip__subs-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.22rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #46586b;
+}
+
+.fm-tip__subs-head .fm-tip__quiet {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.fm-tip__sub-list {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fm-tip__sub {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 0.5rem;
+}
+
+.fm-tip__sub-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-tip__sub-kg {
+  font-variant-numeric: tabular-nums;
+  color: #17212c;
+}
+
+.fm-tip__sub-tags {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  margin-top: 0.08rem;
+}
+
+.fm-tag {
+  display: inline-block;
+  padding: 0.02rem 0.28rem;
+  border-radius: 3px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.fm-tag--iarc { background: #f7e3e4; color: #8a2f3a; }
+.fm-tag--clp { background: #faead9; color: #8a5620; }
+.fm-tag--wfd { background: #e1eef7; color: #1f5c7e; }
+.fm-tag--svhc { background: #eae6f5; color: #4b3f7a; }
+.fm-tag--none { background: #eef1f4; color: #7b8796; font-weight: 500; }
+
+/* Medium of a substance row: air, water, or both. Kept apart from the hazard
+   chips in colour, because it says where the release went, not what it is. */
+.fm-medium {
+  display: inline-block;
+  padding: 0.02rem 0.28rem;
+  border-radius: 3px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.fm-medium--air { background: #e3eef8; color: #1f5c7e; }
+.fm-medium--water { background: #ddf0ec; color: #1c6157; }
+.fm-medium--both { background: #eef1f4; color: #46586b; }
+
+.fm-tip__note {
+  margin: 0.15rem 0 0;
+  color: #536273;
+}
+
+.fm-tip__facts {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+}
+
+.fm-tip__facts > div {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0.4rem;
+}
+
+.fm-tip__facts dt { color: #7b8796; }
+.fm-tip__facts dd { margin: 0; overflow-wrap: anywhere; }
+
+/* The permit link of the IED record: the card names the register the country
+   published, the arrow that it opens outside the page. */
+.fm-tip__link {
+  color: #1f5c7e;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(31, 92, 126, 0.35);
+  cursor: pointer;
+}
+
+.fm-tip__link:hover { border-bottom-color: #1f5c7e; }
+.fm-tip__link:focus-visible { outline: 2px solid #2f6f9f; outline-offset: 1px; }
+
+@media print {
+  .fm-figure { break-inside: avoid; }
+  .fm-switch, .fm-zoom, .fm-tip-box, .fm-search { display: none; }
+  /* A printed map cannot be zoomed or searched, so the legend returns to a
+     column beside it and every facility is on the page at zoom 1. */
+  .fm-body { display: block; }
+  #quarto-document-content .fm-body > aside.fm-legend {
+    position: static;
+    width: auto;
+    max-width: 34rem;
+    max-height: none;
+    box-shadow: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin-top: 0.5rem;
+  }
+}
+

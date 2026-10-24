@@ -25,7 +25,20 @@ editor: visual
 jupyter: python3
 ---
 
-## E-PRTR data cleaning and analysis
+## E-PRTR data cleaning
 ### 
 
-## E-PRTR 
+## Enhanced E-PRTR
+
+### E-PRTR pollutant classification based on various official lists
+
+#### REACH, CLP, SVHC
+#### IARC
+#### EPA HAP
+#### WFD Monitoring List
+
+### E-PRTR facilities connected to IED facility information on installations, permits 
+
+### E-PRTR connected to USEtox flags based on matching and preparation by expert
+
+## Geographical layers for analysis of population count and distribution across Europe

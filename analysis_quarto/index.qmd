@@ -18,7 +18,9 @@ format:
         include-before-body:
             - file: github-corner.html
 
-        include-after-body: "footer.html"
+        include-after-body:
+            - file: footer.html
+            - file: facility-chart-scripts.html
 
 title-block-banner: "#2c3641"
 title-block-banner-color: "#eef0f3"
@@ -59,25 +61,160 @@ No USEtox toxicity weights or characterisation factors have yet been applied to 
 E-PRTR releases have been classified as carcinogenic, hazardous or non-hazardous by matching registered pollutants to their CAS and EC numbers, and then cross-matching those numbers to substances listed under REACH or IARC as hazardous, substances of very high concern (SVHC), or carcinogenic substances.
 :::
 
-## Which facilities emit the largest amount of releases and which the most hazardous mass? 
 
-### Data table
+## Dataset: Classified E-PRTR releases & IED facility information
 
 ```{python}
-#| echo: false
+#| warning: false
 
+from pathlib import Path
 import pandas as pd
 from itables import init_notebook_mode, show
 
+eprtr_classified = pd.read_csv("/home/sarah/Documents/GitHub/eprtr_usetox/eprtr_enhanced.csv")
+
 init_notebook_mode(all_interactive=False)
 
-df = pd.DataFrame({
-    "Facility": ["Facility A", "Facility B", "Facility C"],
-    "Releases":[85, 120, 210]
-})
+show(eprtr_classified.head(10))
 
-show(df)
 ```
+
+## EU Map: Classified E-PRTR releases & IED facility information
+
+
+
+
+
+
+### Which facilities emit the largest releases, the most hazardous mass and the most carcinogenic mass between the years 2022-2024? 
+
+:::{.column-page .facility-page}
+```{python}
+#| echo: false
+#| warning: false
+
+import json
+import sys
+from pathlib import Path
+
+from IPython.display import HTML, display
+
+# The chart itself is assets/facility-releases.js (React + D3); this cell only
+# prepares the numbers and hands them to the component.
+module_dir = Path("/home/sarah/Documents/GitHub/sodas-thesis/analysis_quarto")
+if str(module_dir) not in sys.path:
+    sys.path.append(str(module_dir))
+
+from facility_chart_data import build_payload
+
+payload = json.dumps(build_payload(eprtr_classified), ensure_ascii=False)
+payload = payload.replace("</", "<\\/")  # never close the data tag early
+
+display(
+    HTML(
+        '<div data-fr-root="facility-releases">'
+        f'<script type="application/json">{payload}</script>'
+        "</div>"
+    )
+)
+```
+:::
+
+:::{.callout-note}
+The figure answers the question one ranking at a time: the buttons above the bars switch between three views that share one label column and one visual grammar. Bar length is cumulative mass, colour is the rank within the ranking on screen — the first of five hues for the largest substance, the next hue for the second, and the neutral grey for the pool — and the hover box reports each substance's share of the facility total, the classification that substance carries, and the CO₂ the facility reported.
+
+- **Releases excluding CO₂** ranks the 25 facilities with the largest cumulative mass, stacked by pollutant.
+- **Hazardous** keeps only substances flagged as hazardous in the dataset, which covers HAP, SVHC, WFD priority substances, IARC carcinogens and health-relevant CLP classes.
+- **Carcinogenic** keeps only substances classified as carcinogenic: IARC Group 1 or 2A, or a CLP `Carc.` class.
+
+Greenhouse gases are excluded from the hazardous and carcinogenic views because their mass is not a toxicity signal, and `CO2 excluding biomass` is dropped before summing because it repeats the fossil share of the `CO2` row.
+CO₂ has no view of its own: at 3.4 Gt it is about 58× the mass of every other pollutant combined (98% of all reported mass), so inside a stack it would flatten every other substance into a sliver. The hover box therefore reports the CO₂ each facility released alongside the ranking it was left out of.
+Every substance in the hover box also carries the classification(s) assigned to it in the dataset — IARC group, CLP carcinogenicity, mutagenicity and reprotoxicity classes, HAP, SVHC or WFD priority status — so it is visible why a substance appears in the hazardous or carcinogenic ranking.
+Each view ranks its own top 25 facilities and carries its own axis: only 3 of the 25 facilities are shared by the release and hazardous rankings, and the carcinogenic ranking has one facility in common with either.
+:::
+
+### Which sectors and activities carry that mass?
+
+:::{.column-page .facility-page}
+```{python}
+#| echo: false
+#| warning: false
+
+# The same component as the facility ranking, with two groupings behind a
+# segmented control: the rows become E-PRTR sectors or IED Annex I activities.
+from group_chart_data import build_payload as build_group_payload
+
+group_payload = json.dumps(build_group_payload(eprtr_classified), ensure_ascii=False)
+group_payload = group_payload.replace("</", "<\\/")
+
+display(
+    HTML(
+        '<div data-fr-root="group-releases">'
+        f'<script type="application/json">{group_payload}</script>'
+        "</div>"
+    )
+)
+```
+:::
+
+:::{.callout-note}
+The same three views, asked of groups instead of installations. The upper buttons switch what the rows are, the lower ones what is being ranked, and the colour follows the rank inside the ranking on screen, so the heaviest substance of every view takes the first hue and the rest take the next ones. The five hues are the chart palette; the map keeps its own hazard ladder, so neither figure borrows the other's meaning.
+
+- **E-PRTR sector** ranks the nine sectors of Annex I to the E-PRTR Regulation, plus one row for the facilities whose record carries no sector, so no mass disappears from the view. Four sectors hold 88% of the non-CO₂ mass: chemicals 40%, waste and wastewater 21%, minerals 16% and energy 12%. The concentration differs: chemicals carry their 40% in 706 facilities, waste and wastewater its 21% in 2,352, and the 6,489 livestock installations together carry 0.8% — the ranking measures mass, so a sector of many small plants stays short.
+- **IED activity** ranks the top 20 Annex I codes of each view and pools the rest into one row, drawn last whatever its mass. The subheading states how much of the view could be attributed at all — 84% of the non-CO₂ mass, 87% of the hazardous and 98% of the carcinogenic mass — because a facility whose record carries no activity code cannot be attributed to one and has no row of its own.
+- The ranking changes with the question. Combustion of fuels (code 1.1) leads the release view with 31% of the mass; the hazardous view is a steel story (pig iron and steel 18%, metal ore roasting and sintering 10%, both behind combustion); the carcinogenic view is led by pharmaceutical production (code 4.5, 28%) and by the 1,136 t of benzene that one Estonian oil-shale plant reports (code 1.4(b), 12%) — a single installation, invisible in the mass rankings. Ten of the release view's 20 codes also rank in the carcinogenic view, so the two rankings overlap without agreeing.
+- The energy sector reports 61% of the 3.4 Gt of CO₂ that all three views leave out, more than its 12% of the ranked mass suggests, and combustion of fuels (code 1.1) alone reports 1.7 Gt of it. The figure's footer carries that total, because inside a stack CO₂ would flatten everything else.
+:::
+
+### Where do those releases happen?
+
+:::{.column-page .facility-page}
+```{python}
+#| echo: false
+
+import sys
+from importlib import import_module
+from pathlib import Path
+
+from IPython.display import HTML, display
+
+# The map is assets/facility-map.js (React + D3). It reads the artefacts that
+# project.pre-render writes to assets/map/, so this cell only mounts it and
+# fails loudly when the one-off geometry build has not run yet.
+module_dir = Path("/home/sarah/Documents/GitHub/sodas-thesis/analysis_quarto")
+if str(module_dir) not in sys.path:
+    sys.path.append(str(module_dir))
+
+facility_map_data = import_module("facility_map_data")
+
+missing = [
+    artefact.name
+    for artefact in (
+        facility_map_data.PAYLOAD_FILE,
+        facility_map_data.COUNTRY_FILE,
+        facility_map_data.LAU_GEO_FILE,
+    )
+    if not artefact.is_file()
+]
+if missing:
+    raise FileNotFoundError(
+        "missing assets/map/" + ", ".join(missing)
+        + " - run python3 facility_map_data.py --geo"
+    )
+
+display(HTML('<div id="facility-map-root"></div>'))
+```
+:::
+
+:::{.callout-note}
+The map places the same facilities in space and reads the question the other way round: instead of which single facility is largest, it shows where the mass sits and how it clusters, and the search box and the zoom turn the overview into a locator.
+
+- Each dot is one E-PRTR facility with usable coordinates — 42 facilities report none, so they cannot be drawn — and its diameter follows the log of the mass it reports in the selected view: dots span five decades, from 100 kg to 1 Mt, over a fixed range of about 1.4 to 9 px, so a dot twice as wide is several hundred times heavier. The handful of plants above 1 Mt share the largest circle, which keeps the whole radius range for the 100 t – 1 Mt band where most of the mass sits. The size legend prints three circles — on the combined view, 1 t, 1 kt and 100 kt — because the smallest dot of the scale is a speck and the largest is shared by every capped plant, so neither is a size to measure against. Colour is the strongest classification among its substances, and the five classes take five separate hues: a neutral grey for a facility whose substances carry no classification, then a golden amber, an orange, a crimson, and a magenta for a facility releasing something classified as carcinogenic to humans. Hue, not depth, is the encoding, so a severe dot is read at a glance instead of compared by weight of ink, and the same hue keeps the same meaning on every view. The dots are filled at 75% opacity — the land, the coastline and a neighbour's dot stay visible beneath them — and each carries a hairline in a darker shade of its own hue, since even the deepest of the five is only about 4:1 against the land on its own and the amber step is 2:1. Five hues do not stay ordered the way one deepened family did under red-green colour vision deficiency: amber and orange read as the same yellow under deuteranopia, which is why the legend prints the count of every class beside its swatch and the hover card names the class in words.
+- The **Released to** buttons re-measure the same view three ways — air, water, or both — so one view can be read as an air story and as a water story without switching the ranking. The dots are rescaled, the legend counts and the totals follow, and the hover box marks the medium that is on. Air and water are not comparable streams: the same facility can sit at the top of one and nowhere in the other, which is why the toggle divides mass that a combined total silently adds.
+- Hovering a dot reports the facility's municipality and country, its E-PRTR sector as the register names it, its mass in the selected view, how that mass splits between air and water, the strongest class among its substances, and the substances that carry most of the total — each with its own medium (air, water, or both) and its classification — plus its IED activity, permit status and the CO₂ it reported, the gas left out of all three views. The **Permit** row of the card links to the permit page the country published for the installation (the `permitURL_ied` column of the extract): 11,015 of the 13,344 facilities on the map carry such a link, and the cards of the rest leave the row out. Hovering a municipality outline reports its country, area, facility count and the same total and split. A click pins the box in place so it can be read across to the ranking chart — and so the permit link can be followed, since a hover card is out of reach of the pointer; the × on a pinned card, another click on the dot, or Escape with the map focused releases it.
+- The **Municipalities** layer is outlines only, and it is there for one reason: the dots say *how much* and *of what*, the outlines say *which municipality* a cluster belongs to. They carry no shading, so the whole colour budget stays with the facility dots.
+- Drag to pan and double-click to zoom in place; the scroll wheel belongs to the page until you press the map once, and then it zooms up to 2048× (a window 2.7 km across), with the scale bar following the transform. The reset button, or 0, returns to the full window and gives the wheel back to the page. The dots stop growing with the zoom, so neighbouring plants separate instead of merging into one blob. The search box reaches every country, municipality and facility in the payload, and picking a hit frames its bounding box — a country, a municipality, or a 12 km window around a facility — and opens the card of the municipality or the facility it framed. The three view buttons are the same three rankings as above, except in the carcinogenic view: the map draws every facility that emits a substance the classification ladder calls carcinogenic at all, the "possibly carcinogenic" class included, so it is a wider set than the carcinogenic ranking, which keeps only IARC Group 1 and 2A.
+:::
 
 ### Data visualisation
 ```{python}

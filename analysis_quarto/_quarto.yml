@@ -2,6 +2,11 @@ project:
   type: website
   resources:
     - particlesjs-config.json
+    # The map fetches its data at run time, so these files must ship beside the
+    # page: embed-resources only inlines what the HTML refers to statically.
+    - assets/map
+  pre-render:
+    - python3 facility_map_data.py
 
 website:
   title: "analysis_quarto"
