@@ -7,14 +7,16 @@ project:
     - assets/map
   pre-render:
     - python3 facility_map_data.py
+  output-dir: docs
 
 website:
-  title: "analysis_quarto"
+  title: "EU Toxic Burden Atlas"
   navbar:
     left:
       - href: index.qmd
-        text: Home
-      - about.qmd
+        text: Map & Analysis
+      - href: about.qmd
+        text: Methodology
 
 format:
   html:

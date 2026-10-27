@@ -81,7 +81,7 @@
         "\n",
         "## Data set: Classified E-PRTR releases & IED facility information"
       ],
-      "id": "816a853c"
+      "id": "436e392b"
     },
     {
       "cell_type": "code",
@@ -99,7 +99,7 @@
         "\n",
         "show(eprtr_classified.head(29))"
       ],
-      "id": "ef16a7a8",
+      "id": "6afbf28b",
       "execution_count": null,
       "outputs": []
     },
@@ -111,7 +111,7 @@
         "\n",
         ":::{.column-page .facility-page}"
       ],
-      "id": "228acb2e"
+      "id": "03d713f5"
     },
     {
       "cell_type": "code",
@@ -151,7 +151,7 @@
         "\n",
         "display(HTML('<div id=\"facility-map-root\"></div>'))"
       ],
-      "id": "8e029c76",
+      "id": "4d457a07",
       "execution_count": null,
       "outputs": []
     },
@@ -166,7 +166,7 @@
         "\n",
         ":::{.column-page .facility-page}"
       ],
-      "id": "f2a30686"
+      "id": "da0cb10b"
     },
     {
       "cell_type": "code",
@@ -200,7 +200,7 @@
         "    )\n",
         ")"
       ],
-      "id": "ca2676e3",
+      "id": "f20403a7",
       "execution_count": null,
       "outputs": []
     },
@@ -214,7 +214,7 @@
         "\n",
         ":::{.column-page .facility-page}"
       ],
-      "id": "5d5fa069"
+      "id": "fa139f48"
     },
     {
       "cell_type": "code",
@@ -238,7 +238,7 @@
         "    )\n",
         ")"
       ],
-      "id": "7c47fc39",
+      "id": "05c9fde2",
       "execution_count": null,
       "outputs": []
     },
@@ -271,7 +271,7 @@
         "\n",
         "::: {.callout-note collapse=\"true\" title=\"Session Information\"}"
       ],
-      "id": "7748ca49"
+      "id": "69b97d00"
     },
     {
       "cell_type": "code",
@@ -283,7 +283,7 @@
         "\n",
         "session_info.show(html=False, dependencies=True)"
       ],
-      "id": "d0d6d1d7",
+      "id": "faa16632",
       "execution_count": null,
       "outputs": []
     },
@@ -293,7 +293,7 @@
       "source": [
         ":::"
       ],
-      "id": "8023326d"
+      "id": "a086eb06"
     }
   ],
   "metadata": {
