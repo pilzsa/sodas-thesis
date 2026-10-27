@@ -11,6 +11,9 @@ project:
 
 website:
   title: "EU Toxic Burden Atlas"
+  # Project site on GitHub Pages: the artifact of .github/workflows/pages.yml is
+  # analysis_quarto/docs, served at this sub-path. Internal links stay relative.
+  site-url: https://pilzsa.github.io/sodas-thesis/
   navbar:
     left:
       - href: index.qmd

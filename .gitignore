@@ -1,0 +1,30 @@
+# ---------------------------------------------------------------------------
+# Quarto build artefacts
+# The published site is the committed analysis_quarto/docs/ folder (served by
+# .github/workflows/pages.yml). Everything else Quarto writes is disposable.
+# ---------------------------------------------------------------------------
+analysis_quarto/_site/
+analysis_quarto/docs/_site/
+analysis_quarto/.quarto/
+**/*.quarto_ipynb*
+**/*.quarto_ipynb
+
+# Jupyter / editor noise
+.ipynb_checkpoints/
+.jupyter/
+
+# ---------------------------------------------------------------------------
+# Local inputs
+# Too large or not redistributable. They are needed by facility_map_data.py and
+# by the python chunks of index.qmd, so they are required for a *local* render
+# but are deliberately never committed (CI only deploys the built site).
+# ---------------------------------------------------------------------------
+eprtr_enhanced.csv
+LAU/
+JRC-ESTAT_Census_Population_2021_100m/
+eea_t_ied-eprtr_p_2007-2024_v16_r00/
+eea_t_waterbase-water-quality-icm-2026_p_1900-2025_v01_r00/
+eea_v_4326_10_m_ied-eprtr_p_2007-2024_v16_r00/
+official_classification/
+R_eurobarometer105/
+eurobarometer105/

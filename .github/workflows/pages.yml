@@ -1,0 +1,62 @@
+name: Deploy site to GitHub Pages
+
+# The site is built locally (`quarto render` in analysis_quarto/, which runs the
+# facility_map_data.py pre-render hook) and committed as analysis_quarto/docs/.
+# The build inputs (eprtr_enhanced.csv, LAU/, the raster folders) are not in the
+# repository, so CI cannot rebuild it - it only publishes the committed build.
+# That also matches how GitHub Pages addresses a project site: the artefact root
+# becomes https://<user>.github.io/<repo>/, so docs/index.html must be at its top.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # File mtimes are not preserved by git, so compare the last commit that
+      # touched the sources with the last one that touched the build.
+      - name: Warn when the committed site predates its sources
+        run: |
+          src=$(git log -1 --format=%ct -- \
+            analysis_quarto/index.qmd analysis_quarto/about.qmd \
+            analysis_quarto/_quarto.yml analysis_quarto/styles.css \
+            analysis_quarto/assets/facility-map.js analysis_quarto/assets/map \
+            analysis_quarto/facility_chart_data.py analysis_quarto/group_chart_data.py \
+            analysis_quarto/facility_emission_ranking.py analysis_quarto/palette.py)
+          built=$(git log -1 --format=%ct -- analysis_quarto/docs/index.html)
+          echo "sources last changed: $src"
+          echo "site last built:       $built"
+          if [ -n "$built" ] && [ "$built" -lt "$src" ]; then
+            echo "::warning::analysis_quarto/docs/ is older than its sources - run quarto render and commit again"
+          fi
+
+      - name: Check the build has an entry point
+        run: test -f analysis_quarto/docs/index.html || { echo "::error::analysis_quarto/docs/index.html is missing"; exit 1; }
+
+      # enablement: turns on Pages (build type: workflow) if it is not configured
+      # yet, so the first push on a fresh clone publishes without manual settings.
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: analysis_quarto/docs
+      - id: deploy
+        uses: actions/deploy-pages@v4

@@ -1,2 +1,10 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# The rendered site is committed (GitHub Pages publishes analysis_quarto/docs).
+# Keep the single-file ~5 MB pages out of diff review and language statistics.
+analysis_quarto/docs/index.html         -diff linguist-generated=true
+analysis_quarto/docs/about.html         -diff linguist-generated=true
+analysis_quarto/docs/search.json        -diff linguist-generated=true
+analysis_quarto/docs/assets/map/*.json  linguist-generated=true
+analysis_quarto/docs/site_libs/**       linguist-generated=true
