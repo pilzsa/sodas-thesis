@@ -606,8 +606,9 @@ figcaption {
 
 /* ---------------------------------------------------------------------- map */
 
-/* The map takes the full width of the figure; the legend floats over its
-   north-east corner, where the window has the fewest facilities. */
+/* The map takes the full width of the figure; the legend runs beneath it in a
+   strip of its own, outside the frame, so it hides no dots and every pointer
+   gesture over the window stays with the map. */
 .fm-body {
   position: relative;
   min-width: 0;
@@ -706,22 +707,25 @@ figcaption {
 
 /* -------------------------------------------------------------------- legend */
 
-/* The legend sits over the map rather than in a column beside it, so the map
-   keeps the full page width. Quarto's own aside rule is overridden because it
-   would otherwise pin this box to the page margin. */
+/* The legend sits below the map, outside its frame, in three columns: an overlay
+   hid the dots it described and swallowed every gesture over that corner. The
+   columns are quiet - a hairline apart, no shadow - so the boxes read as one
+   caption under the map rather than as a second panel. Quarto's own aside rule
+   is overridden because it would otherwise pin this box to the page margin. */
 #quarto-document-content .fm-body > aside.fm-legend {
-  position: absolute;
-  z-index: 3;
-  top: 0.6rem;
-  right: 0.6rem;
-  width: 14.5rem;
-  max-height: calc(100% - 1.2rem);
-  overflow-y: auto;
-  padding: 0.55rem 0.65rem 0.6rem;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid #c8d6e2;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem 1.75rem;
+  position: static;
+  width: auto;
+  max-height: none;
+  overflow: visible;
+  margin-top: 0.55rem;
+  padding: 0.7rem 0.8rem 0.75rem;
+  background: #ffffff;
+  border: 1px solid #d7dfe8;
   border-radius: 6px;
-  box-shadow: 0 8px 20px rgba(17, 30, 44, 0.1);
+  box-shadow: none;
   grid-column: auto !important;
   grid-row: auto !important;
 }
@@ -732,21 +736,31 @@ figcaption {
   color: #536273;
 }
 
-@media (max-width: 900px) {
-  #quarto-document-content .fm-body > aside.fm-legend {
-    position: static;
-    width: auto;
-    max-width: 34rem;
-    max-height: none;
-    margin-bottom: 0.6rem;
-    box-shadow: none;
-  }
+/* Side by side, the blocks are separated by a vertical hairline; stacked (narrow
+   screens, print) they fall back to the horizontal rule a column used to need. */
+#quarto-document-content .fm-body > aside.fm-legend > .fm-legend__block + .fm-legend__block {
+  margin-top: 0;
+  padding-top: 0;
+  padding-left: 1.75rem;
+  border-top: 0;
+  border-left: 1px solid #e9eef4;
 }
 
-.fm-legend__block + .fm-legend__block {
-  margin-top: 0.9rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid #e9eef4;
+/* The counts read as a column of figures beside their labels, so the hazard list
+   keeps a readable measure instead of the whole third of the page. */
+.fm-legend__list { max-width: 19rem; }
+
+@media (max-width: 900px) {
+  #quarto-document-content .fm-body > aside.fm-legend {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+  #quarto-document-content .fm-body > aside.fm-legend > .fm-legend__block + .fm-legend__block {
+    padding-left: 0;
+    padding-top: 0.7rem;
+    border-left: 0;
+    border-top: 1px solid #e9eef4;
+  }
 }
 
 .fm-legend__head {
@@ -1061,19 +1075,28 @@ figcaption {
 @media print {
   .fm-figure { break-inside: avoid; }
   .fm-switch, .fm-zoom, .fm-tip-box, .fm-search { display: none; }
-  /* A printed map cannot be zoomed or searched, so the legend returns to a
-     column beside it and every facility is on the page at zoom 1. */
+  /* A printed map cannot be zoomed or searched, so every facility is on the page
+     at zoom 1 and the legend stacks in one column under the window: three
+     columns of a printed page would be too narrow to read. */
   .fm-body { display: block; }
   #quarto-document-content .fm-body > aside.fm-legend {
+    display: block;
     position: static;
     width: auto;
     max-width: 34rem;
     max-height: none;
-    box-shadow: none;
+    margin-top: 0.5rem;
+    padding: 0;
     background: transparent;
     border: 0;
-    padding: 0;
-    margin-top: 0.5rem;
+    box-shadow: none;
+  }
+  #quarto-document-content .fm-body > aside.fm-legend > .fm-legend__block + .fm-legend__block {
+    margin-top: 0.7rem;
+    padding-top: 0.6rem;
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid #e9eef4;
   }
 }
 

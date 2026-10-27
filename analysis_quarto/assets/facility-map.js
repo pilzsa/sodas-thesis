@@ -822,7 +822,6 @@
           <span>${tickMass(value)}</span>
         </li>`;
     });
-    var capped = measure.size.cappedFacilities || 0;
 
     return html`
       <aside className="fm-legend">
@@ -838,17 +837,6 @@
         <section className="fm-legend__block">
           <h4 className="fm-legend__head">Dot size <span className="fm-legend__quiet">total, ${measureShort(measure)}</span></h4>
           <ul className="fm-legend__sizes">${sizes}</ul>
-          <p className="fm-legend__note">
-            Mass on a log scale: every step is a decade, so a dot that looks
-            twice as wide carries orders of magnitude more mass.
-            ${capped > 0
-              ? " " +
-                plural(capped, "facility", "facilities") +
-                " above " +
-                tickMass(measure.size.capKg) +
-                " share the largest circle."
-              : ""}
-          </p>
         </section>
         <section className="fm-legend__block">
           <h4 className="fm-legend__head">
@@ -856,8 +844,7 @@
           </h4>
           <p className="fm-legend__note">
             Thin outlines mark the ${d3.format(",d")(payload.meta.lauCount)} municipalities
-            that host at least one facility; hover one for its
-            total. They carry no shading, so the colour stays with the dots.
+            that host at least one facility; hover one for its total.
           </p>
         </section>
       </aside>`;
@@ -1881,9 +1868,6 @@
         </button>`;
     });
 
-    var meta = payload.meta;
-    
-
     return html`
       <figure className="fm-figure">
         <div className="fm-head">
@@ -1916,11 +1900,11 @@
             radius=${radius} levelCounts=${levelCounts} />
         </div>
         <p className="fm-foot">
-          ${footer.join(" \u00b7 ")}. Click a dot
-          to pin its card: a pinned card can be read while the map moves, and its
-          permit link opens the page the country published. Hover a dot for its
-          air/water split, its strongest hazard class and the substances behind
-          the total; hover a municipality outline for its total. 
+          Click a dot to pin its card: a pinned card can be read while the map
+          moves, and its permit link opens the page the country published. Hover
+          a dot for its air/water split, its strongest hazard class and the
+          substances behind the total; hover a municipality outline for its
+          total. 
         </p>
       </figure>`;
   }
