@@ -1,5 +1,5 @@
 ---
-title: "About the methodology"
+title: "Methodology"
 format: 
     html:
         code-fold: true
@@ -25,20 +25,35 @@ editor: visual
 jupyter: python3
 ---
 
-## E-PRTR data cleaning
-### 
+## E-PRTR analysis: Production of overview stats for data cleaning and flagging in analysis.
 
-## Enhanced E-PRTR
+## Data Set of E-PRTR facilities and reported releases of pollutants to air and water
 
-### E-PRTR pollutant classification based on various official lists
+### Enhancing the E-PRTR data 
 
-#### REACH, CLP, SVHC
-#### IARC
-#### EPA HAP
-#### WFD Monitoring List
+#### official substance classifications
+##### REACH, CLP, SVHC
+##### IARC
+##### EPA HAP
+##### WFD Monitoring List
 
-### E-PRTR facilities connected to IED facility information on installations, permits 
+#### official IED installations, activity and permit information
+#### USEtox model, epidemiological chracterisation factors
 
-### E-PRTR connected to USEtox flags based on matching and preparation by expert
+## Population data layers and analytical functions
 
-## Geographical layers for analysis of population count and distribution across Europe
+### Geographical layers for analysis of population count and distribution across Europe
+
+#### 2026 JRC-ESTAT 100 m modelled cells disaggregted from 1 km grid EU Census 2021 benchmark on population count and distribution across Europe 
+
+#### Parent Eurostat Census 2021 1 km grid benchmark on population count and distribution across Europe
+
+##### Calculation of population within the neighbourhood radius of a facility, and municipal populations
+
+#### Illustration of state and county boundaries for orientation on map
+
+##### NUTS and LAU areas, shapefiles, including population data from Eurostat
+
+#### Validation and sensitivity analysis
+
+##### Official LAU 2021 population layers for validation of 100 m disaggregated EU Census 2021 population data

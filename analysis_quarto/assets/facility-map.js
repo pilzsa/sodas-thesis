@@ -1941,17 +1941,11 @@
             radius=${radius} levelCounts=${levelCounts} />
         </div>
         <p className="fm-foot">
-          ${footer.join(" \u00b7 ")}. Drag to pan and double-click to zoom in
-          place, or press the map once to give it the scroll wheel - until then
-          the page keeps its scroll - and zoom up to 2048x, where the window is
-          2.7 km across and the scale bar follows the transform; the reset button
-          (or 0) returns to the full window and hands the wheel back. Click a dot
+          ${footer.join(" \u00b7 ")}. Click a dot
           to pin its card: a pinned card can be read while the map moves, and its
           permit link opens the page the country published. Hover a dot for its
           air/water split, its strongest hazard class and the substances behind
-          the total; hover a municipality outline for its total. The air / water
-          buttons re-measure the same view, so the dots, the legend and the
-          cards always describe the releases the toggle selects.
+          the total; hover a municipality outline for its total. 
         </p>
       </figure>`;
   }

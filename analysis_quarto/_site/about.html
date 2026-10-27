@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>About the methodology – analysis_quarto</title>
+<title>Methodology – analysis_quarto</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -4101,13 +4101,17 @@ print-color-adjust: exact;
 #quarto-document-content .column-page.facility-page {
 grid-column: page-start / body-end;
 }
+
 .fr-head {
-display: flex;
-flex-wrap: wrap;
-align-items: flex-end;
-justify-content: space-between;
+display: grid;
+grid-template-columns: minmax(0, 1fr) auto;
+align-items: start;
 gap: 0.55rem 1.5rem;
 margin-bottom: 0.85rem;
+}
+@media (max-width: 900px) {
+.fr-head { grid-template-columns: minmax(0, 1fr); }
+.fr-head > .fr-controls { justify-self: start; }
 }
 .fr-head__title {
 margin: 0 0 0.15rem;
@@ -4118,6 +4122,7 @@ line-height: 1.3;
 .fr-head__sub {
 margin: 0;
 max-width: 46em;
+min-height: 2.7em;
 font-size: 0.76rem;
 line-height: 1.35;
 color: #536273;
@@ -4155,6 +4160,23 @@ box-shadow: 0 1px 2px rgba(17, 30, 44, 0.12);
 outline: 2px solid #0d5b83;
 outline-offset: 1px;
 }
+
+.fr-controls {
+display: flex;
+flex-direction: column;
+align-items: flex-end;
+gap: 0.4rem;
+}
+
+.fr-switch--group { flex: 0 0 auto; }
+.fr-switch__lead {
+align-self: center;
+padding: 0 0.35rem 0 0.45rem;
+font-size: 0.68rem;
+font-weight: 600;
+color: #7b8796;
+white-space: nowrap;
+}
 .fr-legend {
 display: flex;
 flex-wrap: wrap;
@@ -4171,11 +4193,13 @@ align-items: center;
 gap: 0.35rem;
 transition: opacity 120ms ease;
 }
+
 .fr-legend__swatch {
 width: 0.65rem;
 height: 0.65rem;
 border-radius: 2px;
 flex: 0 0 auto;
+box-shadow: inset 0 0 0 1px rgba(23, 33, 44, 0.32);
 }
 .fr-plot { position: relative; }
 .fr-plot svg { display: block; max-width: 100%; }
@@ -4234,7 +4258,12 @@ padding: 0.08rem 0.15rem;
 background: #f5f8fb;
 border-radius: 3px;
 }
-.fr-tip__swatch { width: 0.6rem; height: 0.6rem; border-radius: 2px; }
+.fr-tip__swatch {
+width: 0.6rem;
+height: 0.6rem;
+border-radius: 2px;
+box-shadow: inset 0 0 0 1px rgba(23, 33, 44, 0.32);
+}
 .fr-tip__value { font-variant-numeric: tabular-nums; }
 .fr-tip__share {
 min-width: 2.6rem;
@@ -4518,9 +4547,10 @@ min-width: 0;
 position: relative;
 min-width: 0;
 overflow: hidden;
-border: 1px solid #c8d6e2;
+border: 1px solid #b3c4d3;
 border-radius: 6px;
-background: #e7eff5;
+
+background: #dfe8f0;
 
 touch-action: none;
 -webkit-user-select: none;
@@ -4532,17 +4562,21 @@ outline-offset: 2px;
 }
 .fm-plot.is-zoomed { cursor: grab; }
 .fm-plot.is-zoomed:active { cursor: grabbing; }
+
+.fm-plot.is-engaged { cursor: grab; }
+.fm-plot.is-engaged:active { cursor: grabbing; }
 .fm-plot svg { display: block; }
 .fm-plot text { font-family: inherit; }
 .fm-plot path { shape-rendering: geometricPrecision; }
-.fm-sea { fill: #e7eff5; }
+
+.fm-sea { fill: #dfe8f0; }
 .fm-base path { stroke-linejoin: round; }
 .fm-scale-label {
 font-size: 0.62rem;
 font-weight: 600;
 fill: #46586b;
 paint-order: stroke;
-stroke: #e7eff5;
+stroke: #dfe8f0;
 stroke-width: 2px;
 }
 
@@ -4644,12 +4678,13 @@ align-items: center;
 gap: 0.4rem;
 padding: 0.08rem 0;
 }
+
 .fm-legend__swatch {
 width: 0.7rem;
 height: 0.7rem;
 border-radius: 2px;
 flex: 0 0 auto;
-box-shadow: inset 0 0 0 1px rgba(23, 33, 44, 0.12);
+box-shadow: inset 0 0 0 1px rgba(23, 33, 44, 0.28);
 }
 .fm-legend__text { flex: 1 1 auto; }
 .fm-legend__count {
@@ -4773,6 +4808,7 @@ width: 0.6rem;
 height: 0.6rem;
 border-radius: 2px;
 flex: 0 0 auto;
+box-shadow: inset 0 0 0 1px rgba(23, 33, 44, 0.32);
 }
 .fm-tip__quiet { color: #7b8796; }
 
@@ -4919,7 +4955,7 @@ margin-top: 0.5rem;
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="./about.html" aria-current="page"> 
-<span class="menu-text">About the methodology</span></a>
+<span class="menu-text">Methodology</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -4932,7 +4968,7 @@ margin-top: 0.5rem;
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">About the methodology</h1>
+      <h1 class="title">Methodology</h1>
                       </div>
   </div>
     
@@ -4953,17 +4989,15 @@ margin-top: 0.5rem;
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#e-prtr-data-cleaning" id="toc-e-prtr-data-cleaning" class="nav-link active" data-scroll-target="#e-prtr-data-cleaning"><span class="header-section-number">1</span> E-PRTR data cleaning</a>
+  <li><a href="#e-prtr-analysis-production-of-overview-stats-for-data-cleaning-and-flagging-in-analysis." id="toc-e-prtr-analysis-production-of-overview-stats-for-data-cleaning-and-flagging-in-analysis." class="nav-link active" data-scroll-target="#e-prtr-analysis-production-of-overview-stats-for-data-cleaning-and-flagging-in-analysis."><span class="header-section-number">1</span> E-PRTR analysis: Production of overview stats for data cleaning and flagging in analysis.</a></li>
+  <li><a href="#data-set-of-e-prtr-facilities-and-reported-releases-of-pollutants-to-air-and-water" id="toc-data-set-of-e-prtr-facilities-and-reported-releases-of-pollutants-to-air-and-water" class="nav-link" data-scroll-target="#data-set-of-e-prtr-facilities-and-reported-releases-of-pollutants-to-air-and-water"><span class="header-section-number">2</span> Data Set of E-PRTR facilities and reported releases of pollutants to air and water</a>
   <ul class="collapse">
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"><span class="header-section-number">1.1</span> </a></li>
+  <li><a href="#enhancing-the-e-prtr-data" id="toc-enhancing-the-e-prtr-data" class="nav-link" data-scroll-target="#enhancing-the-e-prtr-data"><span class="header-section-number">2.1</span> Enhancing the E-PRTR data</a></li>
   </ul></li>
-  <li><a href="#enhanced-e-prtr" id="toc-enhanced-e-prtr" class="nav-link" data-scroll-target="#enhanced-e-prtr"><span class="header-section-number">2</span> Enhanced E-PRTR</a>
+  <li><a href="#population-data-layers-and-analytical-functions" id="toc-population-data-layers-and-analytical-functions" class="nav-link" data-scroll-target="#population-data-layers-and-analytical-functions"><span class="header-section-number">3</span> Population data layers and analytical functions</a>
   <ul class="collapse">
-  <li><a href="#e-prtr-pollutant-classification-based-on-various-official-lists" id="toc-e-prtr-pollutant-classification-based-on-various-official-lists" class="nav-link" data-scroll-target="#e-prtr-pollutant-classification-based-on-various-official-lists"><span class="header-section-number">2.1</span> E-PRTR pollutant classification based on various official lists</a></li>
-  <li><a href="#e-prtr-facilities-connected-to-ied-facility-information-on-installations-permits" id="toc-e-prtr-facilities-connected-to-ied-facility-information-on-installations-permits" class="nav-link" data-scroll-target="#e-prtr-facilities-connected-to-ied-facility-information-on-installations-permits"><span class="header-section-number">2.2</span> E-PRTR facilities connected to IED facility information on installations, permits</a></li>
-  <li><a href="#e-prtr-connected-to-usetox-flags-based-on-matching-and-preparation-by-expert" id="toc-e-prtr-connected-to-usetox-flags-based-on-matching-and-preparation-by-expert" class="nav-link" data-scroll-target="#e-prtr-connected-to-usetox-flags-based-on-matching-and-preparation-by-expert"><span class="header-section-number">2.3</span> E-PRTR connected to USEtox flags based on matching and preparation by expert</a></li>
+  <li><a href="#geographical-layers-for-analysis-of-population-count-and-distribution-across-europe" id="toc-geographical-layers-for-analysis-of-population-count-and-distribution-across-europe" class="nav-link" data-scroll-target="#geographical-layers-for-analysis-of-population-count-and-distribution-across-europe"><span class="header-section-number">3.1</span> Geographical layers for analysis of population count and distribution across Europe</a></li>
   </ul></li>
-  <li><a href="#geographical-layers-for-analysis-of-population-count-and-distribution-across-europe" id="toc-geographical-layers-for-analysis-of-population-count-and-distribution-across-europe" class="nav-link" data-scroll-target="#geographical-layers-for-analysis-of-population-count-and-distribution-across-europe"><span class="header-section-number">3</span> Geographical layers for analysis of population count and distribution across Europe</a></li>
   </ul>
 </nav>
     </div>
@@ -4975,40 +5009,64 @@ margin-top: 0.5rem;
 
 
 
-<section id="e-prtr-data-cleaning" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="e-prtr-data-cleaning"><span class="header-section-number">1</span> E-PRTR data cleaning</h2>
-<section id="section" class="level3" data-number="1.1">
-<h3 data-number="1.1" class="anchored" data-anchor-id="section"><span class="header-section-number">1.1</span> </h3>
+<section id="e-prtr-analysis-production-of-overview-stats-for-data-cleaning-and-flagging-in-analysis." class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="e-prtr-analysis-production-of-overview-stats-for-data-cleaning-and-flagging-in-analysis."><span class="header-section-number">1</span> E-PRTR analysis: Production of overview stats for data cleaning and flagging in analysis.</h2>
+</section>
+<section id="data-set-of-e-prtr-facilities-and-reported-releases-of-pollutants-to-air-and-water" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="data-set-of-e-prtr-facilities-and-reported-releases-of-pollutants-to-air-and-water"><span class="header-section-number">2</span> Data Set of E-PRTR facilities and reported releases of pollutants to air and water</h2>
+<section id="enhancing-the-e-prtr-data" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="enhancing-the-e-prtr-data"><span class="header-section-number">2.1</span> Enhancing the E-PRTR data</h3>
+<section id="official-substance-classifications" class="level4" data-number="2.1.1">
+<h4 data-number="2.1.1" class="anchored" data-anchor-id="official-substance-classifications"><span class="header-section-number">2.1.1</span> official substance classifications</h4>
+<section id="reach-clp-svhc" class="level5" data-number="2.1.1.1">
+<h5 data-number="2.1.1.1" class="anchored" data-anchor-id="reach-clp-svhc"><span class="header-section-number">2.1.1.1</span> REACH, CLP, SVHC</h5>
+</section>
+<section id="iarc" class="level5" data-number="2.1.1.2">
+<h5 data-number="2.1.1.2" class="anchored" data-anchor-id="iarc"><span class="header-section-number">2.1.1.2</span> IARC</h5>
+</section>
+<section id="epa-hap" class="level5" data-number="2.1.1.3">
+<h5 data-number="2.1.1.3" class="anchored" data-anchor-id="epa-hap"><span class="header-section-number">2.1.1.3</span> EPA HAP</h5>
+</section>
+<section id="wfd-monitoring-list" class="level5" data-number="2.1.1.4">
+<h5 data-number="2.1.1.4" class="anchored" data-anchor-id="wfd-monitoring-list"><span class="header-section-number">2.1.1.4</span> WFD Monitoring List</h5>
 </section>
 </section>
-<section id="enhanced-e-prtr" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="enhanced-e-prtr"><span class="header-section-number">2</span> Enhanced E-PRTR</h2>
-<section id="e-prtr-pollutant-classification-based-on-various-official-lists" class="level3" data-number="2.1">
-<h3 data-number="2.1" class="anchored" data-anchor-id="e-prtr-pollutant-classification-based-on-various-official-lists"><span class="header-section-number">2.1</span> E-PRTR pollutant classification based on various official lists</h3>
-<section id="reach-clp-svhc" class="level4" data-number="2.1.1">
-<h4 data-number="2.1.1" class="anchored" data-anchor-id="reach-clp-svhc"><span class="header-section-number">2.1.1</span> REACH, CLP, SVHC</h4>
+<section id="official-ied-installations-activity-and-permit-information" class="level4" data-number="2.1.2">
+<h4 data-number="2.1.2" class="anchored" data-anchor-id="official-ied-installations-activity-and-permit-information"><span class="header-section-number">2.1.2</span> official IED installations, activity and permit information</h4>
 </section>
-<section id="iarc" class="level4" data-number="2.1.2">
-<h4 data-number="2.1.2" class="anchored" data-anchor-id="iarc"><span class="header-section-number">2.1.2</span> IARC</h4>
-</section>
-<section id="epa-hap" class="level4" data-number="2.1.3">
-<h4 data-number="2.1.3" class="anchored" data-anchor-id="epa-hap"><span class="header-section-number">2.1.3</span> EPA HAP</h4>
-</section>
-<section id="wfd-monitoring-list" class="level4" data-number="2.1.4">
-<h4 data-number="2.1.4" class="anchored" data-anchor-id="wfd-monitoring-list"><span class="header-section-number">2.1.4</span> WFD Monitoring List</h4>
+<section id="usetox-model-epidemiological-chracterisation-factors" class="level4" data-number="2.1.3">
+<h4 data-number="2.1.3" class="anchored" data-anchor-id="usetox-model-epidemiological-chracterisation-factors"><span class="header-section-number">2.1.3</span> USEtox model, epidemiological chracterisation factors</h4>
 </section>
 </section>
-<section id="e-prtr-facilities-connected-to-ied-facility-information-on-installations-permits" class="level3" data-number="2.2">
-<h3 data-number="2.2" class="anchored" data-anchor-id="e-prtr-facilities-connected-to-ied-facility-information-on-installations-permits"><span class="header-section-number">2.2</span> E-PRTR facilities connected to IED facility information on installations, permits</h3>
 </section>
-<section id="e-prtr-connected-to-usetox-flags-based-on-matching-and-preparation-by-expert" class="level3" data-number="2.3">
-<h3 data-number="2.3" class="anchored" data-anchor-id="e-prtr-connected-to-usetox-flags-based-on-matching-and-preparation-by-expert"><span class="header-section-number">2.3</span> E-PRTR connected to USEtox flags based on matching and preparation by expert</h3>
+<section id="population-data-layers-and-analytical-functions" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="population-data-layers-and-analytical-functions"><span class="header-section-number">3</span> Population data layers and analytical functions</h2>
+<section id="geographical-layers-for-analysis-of-population-count-and-distribution-across-europe" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="geographical-layers-for-analysis-of-population-count-and-distribution-across-europe"><span class="header-section-number">3.1</span> Geographical layers for analysis of population count and distribution across Europe</h3>
+<section id="jrc-estat-100-m-modelled-cells-disaggregted-from-1-km-grid-eu-census-2021-benchmark-on-population-count-and-distribution-across-europe" class="level4" data-number="3.1.1">
+<h4 data-number="3.1.1" class="anchored" data-anchor-id="jrc-estat-100-m-modelled-cells-disaggregted-from-1-km-grid-eu-census-2021-benchmark-on-population-count-and-distribution-across-europe"><span class="header-section-number">3.1.1</span> 2026 JRC-ESTAT 100 m modelled cells disaggregted from 1 km grid EU Census 2021 benchmark on population count and distribution across Europe</h4>
+</section>
+<section id="parent-eurostat-census-2021-1-km-grid-benchmark-on-population-count-and-distribution-across-europe" class="level4" data-number="3.1.2">
+<h4 data-number="3.1.2" class="anchored" data-anchor-id="parent-eurostat-census-2021-1-km-grid-benchmark-on-population-count-and-distribution-across-europe"><span class="header-section-number">3.1.2</span> Parent Eurostat Census 2021 1 km grid benchmark on population count and distribution across Europe</h4>
+<section id="calculation-of-population-within-the-neighbourhood-radius-of-a-facility-and-municipal-populations" class="level5" data-number="3.1.2.1">
+<h5 data-number="3.1.2.1" class="anchored" data-anchor-id="calculation-of-population-within-the-neighbourhood-radius-of-a-facility-and-municipal-populations"><span class="header-section-number">3.1.2.1</span> Calculation of population within the neighbourhood radius of a facility, and municipal populations</h5>
 </section>
 </section>
-<section id="geographical-layers-for-analysis-of-population-count-and-distribution-across-europe" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="geographical-layers-for-analysis-of-population-count-and-distribution-across-europe"><span class="header-section-number">3</span> Geographical layers for analysis of population count and distribution across Europe</h2>
+<section id="illustration-of-state-and-county-boundaries-for-orientation-on-map" class="level4" data-number="3.1.3">
+<h4 data-number="3.1.3" class="anchored" data-anchor-id="illustration-of-state-and-county-boundaries-for-orientation-on-map"><span class="header-section-number">3.1.3</span> Illustration of state and county boundaries for orientation on map</h4>
+<section id="nuts-and-lau-areas-shapefiles-including-population-data-from-eurostat" class="level5" data-number="3.1.3.1">
+<h5 data-number="3.1.3.1" class="anchored" data-anchor-id="nuts-and-lau-areas-shapefiles-including-population-data-from-eurostat"><span class="header-section-number">3.1.3.1</span> NUTS and LAU areas, shapefiles, including population data from Eurostat</h5>
+</section>
+</section>
+<section id="validation-and-sensitivity-analysis" class="level4" data-number="3.1.4">
+<h4 data-number="3.1.4" class="anchored" data-anchor-id="validation-and-sensitivity-analysis"><span class="header-section-number">3.1.4</span> Validation and sensitivity analysis</h4>
+<section id="official-lau-2021-population-layers-for-validation-of-100-m-disaggregated-eu-census-2021-population-data" class="level5" data-number="3.1.4.1">
+<h5 data-number="3.1.4.1" class="anchored" data-anchor-id="official-lau-2021-population-layers-for-validation-of-100-m-disaggregated-eu-census-2021-population-data"><span class="header-section-number">3.1.4.1</span> Official LAU 2021 population layers for validation of 100 m disaggregated EU Census 2021 population data</h5>
 
 
+</section>
+</section>
+</section>
 </section>
 
 </main> <!-- /main -->

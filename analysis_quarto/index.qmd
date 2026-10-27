@@ -1,6 +1,6 @@
 
 ---
-title: "E-PRTR Analysis"
+title: "EU toxic burden atlas"
 subtitle: "SODAS Thesis"
 format: 
     html:
@@ -29,40 +29,52 @@ editor: visual
 jupyter: python3
 ---
 
-# Excerpt {#section-1}
-
+# Abstract {#section-1}
 
 Skip to the [data analysis](#section-4).
+
+The amount of industrial pollution released by European facilities each year is routinely measured and communicated in terms of tonnes of substances released. However, this metric provides an incomplete and potentially misleading picture, as it does not link industrial emissions to existing substance hazard classifications or provide further information on toxicity-weighted metrics. Despite various data sources being available, they have not yet been linked to provide a comprehensive overview. Currently, there is no Europe-wide database connecting industrial emissions to official substance hazard classifications and epidemiology-based characterisation factors (CFs) to assign meaning to and allow for interpreation of these raw mass releases. 
+
+This research aims to address this gap by linking the European Pollutant Release and Transfer Register (E-PRTR) dataset to official substance hazard classifications and epidemiology-based characterisation factors (CFs). 
+
+We enhanced the E-PRTR dataset by matching its reported pollutants to official substance hazard classifications using their official CAS and EC numbers. This included the European Registration, Evaluation, Authorisation and Restriction of Chemicals (REACH) system, its associated Classification, Labelling and Packaging of Chemicals (CLP) system and substances of very high concern (SVHC). We then linked the E-PRTR dataset to epidemiology-based characterisation factors (CFs) from the USEtox model. This enabled us to calculate human-toxicity-weighted metrics, and estimate the impact of the pollution on human health in terms of the number of Disability-Adjusted Life Years (DALYs). Finally, we overlay the E-PRTR dataset with the EU Census 2021 and geographical layers to analyse population count and distribution across Europe, in order to assess both the number of people, and their demographics, living near sources of hazardous industrial pollution, as well as potential geographical shifts in the location of hazardous industrial pollution over time.
+
+The goal of this study was to create a comprehensive database to improve understanding of the potential health impacts of industrial emissions in Europe, especially on their host populations, to enable better-informed decision-making and policy development.
+
 
 ***
 # Hypothesis {#section-2}
 
+The burden of hosted industrial emissions of hazardous and carcinogenic substances is not evenly distributed across Europe, but is concentrated in a small number of places, with people living near these sites unwittingly residing in the immediate vicinity of installations that emit hazardous pollutants, and potentially suffering a disproportionately high number of years of life lost or years lived with disability.
+
 ***
 # Research questions {#section-3}
 
+## Hosted source pollution pressure analysis:
+
+1. Where are the facilities with the highest number of reported releases of hazardous and carcinogenic substances?	
+
+2. Where are the facilities with the greatest potential impact on human health from these industrial releases?	
+
+3. Has a shift in the location of hazardous industrial pollution occured over time between different regions of Europe?
+
+## Population-proximity analysis:
+
+4. How many people in Europe live near sources of hazardous industrial pollution?	
+
+5. Which population groups live near these sources?	
+
+## Health impact analysis:
+
+6. How many years of life do Europeans lose on average, or spend living with disabilities (DALYs), as a result of hazardous industrial pollution?
+
+7. Which European countries and regions have the highest DALY losses due to hazardous industrial pollution?
 
 ***
 # Data Analysis {#section-4}
 
-:::{.callout-warning}
-The data analysis below is based on the European Pollutant Release and Transfer Register (E-PRTR) dataset^[It has been renamed and, as of 2028, reporting has been restructured under the European Industrial Emissions Portal (IEP); 
-Data source: Industrial Emissions Directive 2010/75/EU and European Pollutant Release and Transfer Register Regulation (EC) No 166/2006 - ver. 16.0 Feb. 2026 (Tabular data): https://sdi.eea.europa.eu/catalogue/srv/eng/catalog.search#/metadata/9405f714-8015-4b5b-a63c-280b82861b3d]. The E-PRTR is a Europe-wide register that provides information on the annual emissions of 91 listed pollutants from industrial facilities. The dataset includes details of facilities, such as their location, sector and name, as well as information on the quantities of pollutants released into the air and water that exceed a given threshold. However, the dataset itself is limited in its representation of actual releases and pollution across Europe due to emissions below the required threshold, pollutants not required to be reported, and facilities smaller than the required size for registration.
-:::
 
-:::{.callout-important}
-The analysis below classifies pollutants as hazardous or non-hazardous based on several official systems, including the European Registration, Evaluation, Authorisation and Restriction of Chemicals (REACH) system and its associated Classification, Labelling and Packaging of Chemicals (CLP) system, as well as substances of very high concern (SVHC). Furthermore, the International Agency for Research on Cancer (IARC) publishes and maintains an official list of substances classified as carcinogenic or potential carcinogens. Finally, pollutants in the E-PRTR have been compared to lists of substances monitored in the environment.
-:::
-
-:::{.callout-caution}
-No USEtox toxicity weights or characterisation factors have yet been applied to the data.
-:::
-
-:::{.callout-note}
-E-PRTR releases have been classified as carcinogenic, hazardous or non-hazardous by matching registered pollutants to their CAS and EC numbers, and then cross-matching those numbers to substances listed under REACH or IARC as hazardous, substances of very high concern (SVHC), or carcinogenic substances.
-:::
-
-
-## Dataset: Classified E-PRTR releases & IED facility information
+## Data set: Classified E-PRTR releases & IED facility information
 
 ```{python}
 #| warning: false
@@ -75,98 +87,11 @@ eprtr_classified = pd.read_csv("/home/sarah/Documents/GitHub/eprtr_usetox/eprtr_
 
 init_notebook_mode(all_interactive=False)
 
-show(eprtr_classified.head(10))
+show(eprtr_classified.head(29))
 
 ```
 
 ## EU Map: Classified E-PRTR releases & IED facility information
-
-
-
-
-
-
-### Which facilities emit the largest releases, the most hazardous mass and the most carcinogenic mass between the years 2022-2024? 
-
-:::{.column-page .facility-page}
-```{python}
-#| echo: false
-#| warning: false
-
-import json
-import sys
-from pathlib import Path
-
-from IPython.display import HTML, display
-
-# The chart itself is assets/facility-releases.js (React + D3); this cell only
-# prepares the numbers and hands them to the component.
-module_dir = Path("/home/sarah/Documents/GitHub/sodas-thesis/analysis_quarto")
-if str(module_dir) not in sys.path:
-    sys.path.append(str(module_dir))
-
-from facility_chart_data import build_payload
-
-payload = json.dumps(build_payload(eprtr_classified), ensure_ascii=False)
-payload = payload.replace("</", "<\\/")  # never close the data tag early
-
-display(
-    HTML(
-        '<div data-fr-root="facility-releases">'
-        f'<script type="application/json">{payload}</script>'
-        "</div>"
-    )
-)
-```
-:::
-
-:::{.callout-note}
-The figure answers the question one ranking at a time: the buttons above the bars switch between three views that share one label column and one visual grammar. Bar length is cumulative mass, colour is the rank within the ranking on screen — the first of five hues for the largest substance, the next hue for the second, and the neutral grey for the pool — and the hover box reports each substance's share of the facility total, the classification that substance carries, and the CO₂ the facility reported.
-
-- **Releases excluding CO₂** ranks the 25 facilities with the largest cumulative mass, stacked by pollutant.
-- **Hazardous** keeps only substances flagged as hazardous in the dataset, which covers HAP, SVHC, WFD priority substances, IARC carcinogens and health-relevant CLP classes.
-- **Carcinogenic** keeps only substances classified as carcinogenic: IARC Group 1 or 2A, or a CLP `Carc.` class.
-
-Greenhouse gases are excluded from the hazardous and carcinogenic views because their mass is not a toxicity signal, and `CO2 excluding biomass` is dropped before summing because it repeats the fossil share of the `CO2` row.
-CO₂ has no view of its own: at 3.4 Gt it is about 58× the mass of every other pollutant combined (98% of all reported mass), so inside a stack it would flatten every other substance into a sliver. The hover box therefore reports the CO₂ each facility released alongside the ranking it was left out of.
-Every substance in the hover box also carries the classification(s) assigned to it in the dataset — IARC group, CLP carcinogenicity, mutagenicity and reprotoxicity classes, HAP, SVHC or WFD priority status — so it is visible why a substance appears in the hazardous or carcinogenic ranking.
-Each view ranks its own top 25 facilities and carries its own axis: only 3 of the 25 facilities are shared by the release and hazardous rankings, and the carcinogenic ranking has one facility in common with either.
-:::
-
-### Which sectors and activities carry that mass?
-
-:::{.column-page .facility-page}
-```{python}
-#| echo: false
-#| warning: false
-
-# The same component as the facility ranking, with two groupings behind a
-# segmented control: the rows become E-PRTR sectors or IED Annex I activities.
-from group_chart_data import build_payload as build_group_payload
-
-group_payload = json.dumps(build_group_payload(eprtr_classified), ensure_ascii=False)
-group_payload = group_payload.replace("</", "<\\/")
-
-display(
-    HTML(
-        '<div data-fr-root="group-releases">'
-        f'<script type="application/json">{group_payload}</script>'
-        "</div>"
-    )
-)
-```
-:::
-
-:::{.callout-note}
-The same three views, asked of groups instead of installations. The upper buttons switch what the rows are, the lower ones what is being ranked, and the colour follows the rank inside the ranking on screen, so the heaviest substance of every view takes the first hue and the rest take the next ones. The five hues are the chart palette; the map keeps its own hazard ladder, so neither figure borrows the other's meaning.
-
-- **E-PRTR sector** ranks the nine sectors of Annex I to the E-PRTR Regulation, plus one row for the facilities whose record carries no sector, so no mass disappears from the view. Four sectors hold 88% of the non-CO₂ mass: chemicals 40%, waste and wastewater 21%, minerals 16% and energy 12%. The concentration differs: chemicals carry their 40% in 706 facilities, waste and wastewater its 21% in 2,352, and the 6,489 livestock installations together carry 0.8% — the ranking measures mass, so a sector of many small plants stays short.
-- **IED activity** ranks the top 20 Annex I codes of each view and pools the rest into one row, drawn last whatever its mass. The subheading states how much of the view could be attributed at all — 84% of the non-CO₂ mass, 87% of the hazardous and 98% of the carcinogenic mass — because a facility whose record carries no activity code cannot be attributed to one and has no row of its own.
-- The ranking changes with the question. Combustion of fuels (code 1.1) leads the release view with 31% of the mass; the hazardous view is a steel story (pig iron and steel 18%, metal ore roasting and sintering 10%, both behind combustion); the carcinogenic view is led by pharmaceutical production (code 4.5, 28%) and by the 1,136 t of benzene that one Estonian oil-shale plant reports (code 1.4(b), 12%) — a single installation, invisible in the mass rankings. Ten of the release view's 20 codes also rank in the carcinogenic view, so the two rankings overlap without agreeing.
-- The energy sector reports 61% of the 3.4 Gt of CO₂ that all three views leave out, more than its 12% of the ranked mass suggests, and combustion of fuels (code 1.1) alone reports 1.7 Gt of it. The figure's footer carries that total, because inside a stack CO₂ would flatten everything else.
-:::
-
-### Where do those releases happen?
 
 :::{.column-page .facility-page}
 ```{python}
@@ -206,170 +131,83 @@ display(HTML('<div id="facility-map-root"></div>'))
 ```
 :::
 
-:::{.callout-note}
-The map places the same facilities in space and reads the question the other way round: instead of which single facility is largest, it shows where the mass sits and how it clusters, and the search box and the zoom turn the overview into a locator.
 
-- Each dot is one E-PRTR facility with usable coordinates — 42 facilities report none, so they cannot be drawn — and its diameter follows the log of the mass it reports in the selected view: dots span five decades, from 100 kg to 1 Mt, over a fixed range of about 1.4 to 9 px, so a dot twice as wide is several hundred times heavier. The handful of plants above 1 Mt share the largest circle, which keeps the whole radius range for the 100 t – 1 Mt band where most of the mass sits. The size legend prints three circles — on the combined view, 1 t, 1 kt and 100 kt — because the smallest dot of the scale is a speck and the largest is shared by every capped plant, so neither is a size to measure against. Colour is the strongest classification among its substances, and the five classes take five separate hues: a neutral grey for a facility whose substances carry no classification, then a golden amber, an orange, a crimson, and a magenta for a facility releasing something classified as carcinogenic to humans. Hue, not depth, is the encoding, so a severe dot is read at a glance instead of compared by weight of ink, and the same hue keeps the same meaning on every view. The dots are filled at 75% opacity — the land, the coastline and a neighbour's dot stay visible beneath them — and each carries a hairline in a darker shade of its own hue, since even the deepest of the five is only about 4:1 against the land on its own and the amber step is 2:1. Five hues do not stay ordered the way one deepened family did under red-green colour vision deficiency: amber and orange read as the same yellow under deuteranopia, which is why the legend prints the count of every class beside its swatch and the hover card names the class in words.
-- The **Released to** buttons re-measure the same view three ways — air, water, or both — so one view can be read as an air story and as a water story without switching the ranking. The dots are rescaled, the legend counts and the totals follow, and the hover box marks the medium that is on. Air and water are not comparable streams: the same facility can sit at the top of one and nowhere in the other, which is why the toggle divides mass that a combined total silently adds.
-- Hovering a dot reports the facility's municipality and country, its E-PRTR sector as the register names it, its mass in the selected view, how that mass splits between air and water, the strongest class among its substances, and the substances that carry most of the total — each with its own medium (air, water, or both) and its classification — plus its IED activity, permit status and the CO₂ it reported, the gas left out of all three views. The **Permit** row of the card links to the permit page the country published for the installation (the `permitURL_ied` column of the extract): 11,015 of the 13,344 facilities on the map carry such a link, and the cards of the rest leave the row out. Hovering a municipality outline reports its country, area, facility count and the same total and split. A click pins the box in place so it can be read across to the ranking chart — and so the permit link can be followed, since a hover card is out of reach of the pointer; the × on a pinned card, another click on the dot, or Escape with the map focused releases it.
-- The **Municipalities** layer is outlines only, and it is there for one reason: the dots say *how much* and *of what*, the outlines say *which municipality* a cluster belongs to. They carry no shading, so the whole colour budget stays with the facility dots.
-- Drag to pan and double-click to zoom in place; the scroll wheel belongs to the page until you press the map once, and then it zooms up to 2048× (a window 2.7 km across), with the scale bar following the transform. The reset button, or 0, returns to the full window and gives the wheel back to the page. The dots stop growing with the zoom, so neighbouring plants separate instead of merging into one blob. The search box reaches every country, municipality and facility in the payload, and picking a hit frames its bounding box — a country, a municipality, or a 12 km window around a facility — and opens the card of the municipality or the facility it framed. The three view buttons are the same three rankings as above, except in the carcinogenic view: the map draws every facility that emits a substance the classification ladder calls carcinogenic at all, the "possibly carcinogenic" class included, so it is a wider set than the carcinogenic ranking, which keeps only IARC Group 1 and 2A.
+### Which facilities emit the largest releases, the most hazardous mass and the most carcinogenic mass between the years 2022-2024? 
+
+:::{.column-page .facility-page}
+```{python}
+#| echo: false
+#| warning: false
+
+import json
+import sys
+from pathlib import Path
+
+from IPython.display import HTML, display
+
+# The chart itself is assets/facility-releases.js (React + D3); this cell only
+# prepares the numbers and hands them to the component.
+module_dir = Path("/home/sarah/Documents/GitHub/sodas-thesis/analysis_quarto")
+if str(module_dir) not in sys.path:
+    sys.path.append(str(module_dir))
+
+from facility_chart_data import build_payload
+
+payload = json.dumps(build_payload(eprtr_classified), ensure_ascii=False)
+payload = payload.replace("</", "<\\/")  # never close the data tag early
+
+display(
+    HTML(
+        '<div data-fr-root="facility-releases">'
+        f'<script type="application/json">{payload}</script>'
+        "</div>"
+    )
+)
+```
 :::
 
-### Data visualisation
-```{python}
+### Which sectors and activities carry that mass?
 
-#| echo: false
-
-import pandas as pd
-import plotly.express as px
-
-# Illustrative data
-data = pd.DataFrame({
-    "date": pd.date_range("2026-01-01", periods=6, freq="MS"),
-    "value":[90, 95, 110, 125, 130, 150]
-})
-
-data = data.sort_values("date")
-
-fig = px.area(
-    data,
-    x="date",
-    y="value",
-    labels={
-        "date": "Date",
-        "value": "Bitcoin price ($)"
-    },
-    template="simple_white"
-)
-
-fig.update_traces(
-    line_color="#69b3a2",
-    fillcolor="rgba(105, 179, 162, 0.5)"
-)
-
-fig.update_layout(
-    hovermode="x unified",
-    height=450
-)
-
-fig.show()
-```
-
-
-### interactive map + linked side chart
-
+:::{.column-page .facility-page}
 ```{python}
 #| echo: false
+#| warning: false
 
-import pandas as pd
-import altair as alt
-from vega_datasets import data
+# The same component as the facility ranking, with two groupings behind a
+# segmented control: the rows become E-PRTR sectors or IED Annex I activities.
+from group_chart_data import build_payload as build_group_payload
 
-# Fictional facility locations
-facilities = pd.DataFrame({
-    "facility": ["Facility A", "Facility B", "Facility C"],
-    "longitude": [8.7, 12.0, 4.5],
-    "latitude": [50.1, 51.3, 51.9]
-})
+group_payload = json.dumps(build_group_payload(eprtr_classified), ensure_ascii=False)
+group_payload = group_payload.replace("</", "<\\/")
 
-# Fictional annual releases
-releases = pd.DataFrame({
-    "facility": ["Facility A"] * 4
-              + ["Facility B"] * 4
-              + ["Facility C"] * 4,
-    "year": [2020, 2021, 2022, 2023] * 3,
-    "releases": [85, 110, 95, 70,
-                 120, 105, 140, 115,
-                 210, 180, 160, 150]
-})
-
-# Separate hover inputs for the two views
-map_hover = alt.selection_point(
-    name="map_hover",
-    fields=["facility"],
-    on="pointerover",
-    clear="pointerout",
-    toggle=False,
-    empty=True
+display(
+    HTML(
+        '<div data-fr-root="group-releases">'
+        f'<script type="application/json">{group_payload}</script>'
+        "</div>"
+    )
 )
-
-chart_hover = alt.selection_point(
-    name="chart_hover",
-    fields=["facility"],
-    on="pointerover",
-    clear="pointerout",
-    toggle=False,
-    empty=True
-)
-
-# With no active hover, all facilities remain visible.
-highlight = map_hover & chart_hover
-
-colors = alt.Color("facility:N", title="Facility")
-
-# Map background
-countries = alt.topo_feature(data.world_110m.url, "countries")
-
-background = alt.Chart(countries).mark_geoshape(
-    fill="#eeeeee",
-    stroke="white"
-)
-
-# Facility markers
-markers = alt.Chart(facilities).mark_circle().encode(
-    longitude="longitude:Q",
-    latitude="latitude:Q",
-    color=colors,
-    opacity=alt.condition(highlight, alt.value(1), alt.value(0.15)),
-    size=alt.condition(highlight, alt.value(180), alt.value(70)),
-    tooltip=["facility:N", "longitude:Q", "latitude:Q"]
-).add_params(map_hover)
-
-map_chart = (background + markers).project(
-    type="mercator",
-    center=[9, 51],
-    scale=1100
-).properties(
-    width=350,
-    height=300,
-    title="Facility locations"
-)
-
-# Time-series lines
-base = alt.Chart(releases).encode(
-    x=alt.X("year:O", title="Year"),
-    y=alt.Y("releases:Q", title="Releases (kg/year)"),
-    color=colors
-)
-
-lines = base.mark_line().encode(
-    opacity=alt.condition(highlight, alt.value(1), alt.value(0.15)),
-    strokeWidth=alt.condition(highlight, alt.value(3), alt.value(1))
-)
-
-# Hovering these points selects a facility in both views
-points = base.mark_circle(size=65).encode(
-    opacity=alt.condition(highlight, alt.value(1), alt.value(0.15)),
-    tooltip=["facility:N", "year:O", "releases:Q"]
-).add_params(chart_hover)
-
-time_chart = (lines + points).properties(
-    width=420,
-    height=300,
-    title="Annual releases"
-)
-
-linked_chart = alt.hconcat(
-    map_chart,
-    time_chart,
-    spacing=25
-).resolve_scale(color="shared")
-
-linked_chart
 ```
-***
+:::
 
+## Data Disclaimer
+
+:::{.callout-warning}
+The data analysis below is based on the European Pollutant Release and Transfer Register (E-PRTR) dataset^[It has been renamed and, as of 2028, reporting has been restructured under the European Industrial Emissions Portal (IEP); 
+Data source: Industrial Emissions Directive 2010/75/EU and European Pollutant Release and Transfer Register Regulation (EC) No 166/2006 - ver. 16.0 Feb. 2026 (Tabular data): https://sdi.eea.europa.eu/catalogue/srv/eng/catalog.search#/metadata/9405f714-8015-4b5b-a63c-280b82861b3d]. The E-PRTR is a Europe-wide register that provides information on the annual emissions of 91 listed pollutants from industrial facilities. The dataset includes details of facilities, such as their location, sector and name, as well as information on the quantities of pollutants released into the air and water that exceed a given threshold. However, the dataset itself is limited in its representation of actual releases and pollution across Europe due to emissions below the required threshold, pollutants not required to be reported, and facilities smaller than the required size for registration.
+:::
+
+:::{.callout-important}
+The analysis below classifies pollutants as hazardous or non-hazardous based on several official systems, including the European Registration, Evaluation, Authorisation and Restriction of Chemicals (REACH) system and its associated Classification, Labelling and Packaging of Chemicals (CLP) system, as well as substances of very high concern (SVHC). Furthermore, the International Agency for Research on Cancer (IARC) publishes and maintains an official list of substances classified as carcinogenic or potential carcinogens. Finally, pollutants in the E-PRTR have been compared to lists of substances monitored in the environment.
+:::
+
+:::{.callout-caution}
+No USEtox toxicity weights or characterisation factors have yet been applied to the data.
+:::
+
+:::{.callout-note}
+E-PRTR releases have been classified as carcinogenic, hazardous or non-hazardous by matching registered pollutants to their CAS and EC numbers, and then cross-matching those numbers to substances listed under REACH or IARC as hazardous, substances of very high concern (SVHC), or carcinogenic substances.
+:::
 
 ***
 
