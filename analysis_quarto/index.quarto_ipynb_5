@@ -81,7 +81,7 @@
         "\n",
         "## Data set: Classified E-PRTR releases & IED facility information"
       ],
-      "id": "436e392b"
+      "id": "097e2bf7"
     },
     {
       "cell_type": "code",
@@ -99,7 +99,7 @@
         "\n",
         "show(eprtr_classified.head(29))"
       ],
-      "id": "6afbf28b",
+      "id": "02e18dac",
       "execution_count": null,
       "outputs": []
     },
@@ -111,7 +111,7 @@
         "\n",
         ":::{.column-page .facility-page}"
       ],
-      "id": "03d713f5"
+      "id": "67d28fa4"
     },
     {
       "cell_type": "code",
@@ -151,7 +151,7 @@
         "\n",
         "display(HTML('<div id=\"facility-map-root\"></div>'))"
       ],
-      "id": "4d457a07",
+      "id": "35440556",
       "execution_count": null,
       "outputs": []
     },
@@ -166,7 +166,7 @@
         "\n",
         ":::{.column-page .facility-page}"
       ],
-      "id": "da0cb10b"
+      "id": "d91499a2"
     },
     {
       "cell_type": "code",
@@ -200,7 +200,7 @@
         "    )\n",
         ")"
       ],
-      "id": "f20403a7",
+      "id": "af246a8d",
       "execution_count": null,
       "outputs": []
     },
@@ -214,7 +214,7 @@
         "\n",
         ":::{.column-page .facility-page}"
       ],
-      "id": "fa139f48"
+      "id": "679eba95"
     },
     {
       "cell_type": "code",
@@ -238,7 +238,7 @@
         "    )\n",
         ")"
       ],
-      "id": "05c9fde2",
+      "id": "5960edcb",
       "execution_count": null,
       "outputs": []
     },
@@ -271,7 +271,7 @@
         "\n",
         "::: {.callout-note collapse=\"true\" title=\"Session Information\"}"
       ],
-      "id": "69b97d00"
+      "id": "978f78b6"
     },
     {
       "cell_type": "code",
@@ -283,7 +283,7 @@
         "\n",
         "session_info.show(html=False, dependencies=True)"
       ],
-      "id": "faa16632",
+      "id": "0f7e6ced",
       "execution_count": null,
       "outputs": []
     },
@@ -293,7 +293,7 @@
       "source": [
         ":::"
       ],
-      "id": "a086eb06"
+      "id": "0223208c"
     }
   ],
   "metadata": {
