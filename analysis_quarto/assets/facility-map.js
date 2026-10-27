@@ -1882,32 +1882,7 @@
     });
 
     var meta = payload.meta;
-    var footer = [
-      plural(meta.facilityCount, "facility", "facilities") +
-        " in " +
-        plural(meta.lauCount, "municipality", "municipalities") +
-        " with at least one facility",
-      "EPSG:3035 (LAEA Europe)",
-      meta.source,
-    ];
-    if (meta.missingCoordinates) {
-      footer.push(
-        plural(meta.missingCoordinates, "facility", "facilities") +
-          " without usable coordinates",
-      );
-    }
-    if (meta.offMap) {
-      footer.push(
-        plural(meta.offMap, "facility", "facilities") +
-          " outside the map window",
-      );
-    }
-    if (meta.permitLinks) {
-      footer.push(
-        plural(meta.permitLinks, "facility", "facilities") +
-          " with a permit link",
-      );
-    }
+    
 
     return html`
       <figure className="fm-figure">
